@@ -7,6 +7,7 @@ data class Status(val code: Int, val description: String) {
         val SWITCHING_PROTOCOLS = status(101, "Switching Protocols")
 
         private val SUCCESSFUL = 200..299
+        @JvmField
         val OK = status(200, "OK")
         val CREATED = status(201, "Created")
         val ACCEPTED = status(202, "Accepted")
