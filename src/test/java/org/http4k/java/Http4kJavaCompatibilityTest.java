@@ -32,7 +32,7 @@ public class Http4kJavaCompatibilityTest {
     public void handler_function() {
         HttpHandler handler = request -> response(OK).body("test");
 
-        Response response = handler.handle(request(GET, Uri.of("/test")));
+        Response response = handler.handle(request(GET, "/test"));
 
         assertThat(response.getStatus(), equalTo(OK));
         assertThat(response.bodyString(), equalTo("test"));
