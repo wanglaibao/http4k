@@ -1,10 +1,15 @@
 package org.http4k.java;
 
 import kotlin.jvm.functions.Function1;
+import org.eclipse.jetty.server.Server;
 import org.http4k.core.*;
 import org.http4k.routing.RoutingHttpHandler;
 import org.http4k.routing.RoutingKt;
 import org.http4k.routing.TemplateRoutingHttpHandler;
+import org.http4k.server.Http4kServer;
+import org.http4k.server.Http4kServerKt;
+import org.http4k.server.Jetty;
+import org.http4k.server.ServerConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
@@ -18,6 +23,7 @@ import static org.http4k.java.RequestFactory.request;
 import static org.http4k.java.ResponseFactory.response;
 import static org.http4k.java.RouteFactory.route;
 import static org.http4k.java.RouteFactory.routes;
+import static org.http4k.java.ServerFactory.server;
 import static org.junit.Assert.assertThat;
 
 public class Http4kJavaCompatibilityTest {
@@ -49,6 +55,12 @@ public class Http4kJavaCompatibilityTest {
         assertThat(app.handle(request(PUT, "/anymethod")).getStatus(), equalTo(OK));
         assertThat(app.handle(request(GET, "/other")).getStatus(), equalTo(NOT_FOUND));
         assertThat(app.handle(request(GET, "/foo/other")).getStatus(), equalTo(NOT_FOUND));
+    }
+
+    @Test
+    public void starting_a_server() {
+        HttpHandler handler = request -> response(OK).body("test");
+        server(handler, new Jetty(new Server())).start();
     }
 }
 
@@ -104,6 +116,12 @@ class RoutingHttpHandlerJava implements HttpHandler, RoutingHttpHandler {
 interface HttpHandler extends Function1<Request, Response> {
     default Response handle(Request request) {
         return invoke(request);
+    }
+}
+
+class ServerFactory {
+    static Http4kServer server(HttpHandler handler, ServerConfig config) {
+        return Http4kServerKt.asServer(handler, config);
     }
 }
 
