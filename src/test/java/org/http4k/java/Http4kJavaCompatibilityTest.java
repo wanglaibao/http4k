@@ -41,11 +41,11 @@ public class Http4kJavaCompatibilityTest {
                 route("/anymethod", handler)
         );
 
-        assertThat(app.invoke(request(GET, Uri.of("/test"))).getStatus(), equalTo(OK));
-        assertThat(app.invoke(request(GET, Uri.of("/foo/bar"))).getStatus(), equalTo(OK));
-        assertThat(app.invoke(request(PUT, Uri.of("/anymethod"))).getStatus(), equalTo(OK));
-        assertThat(app.invoke(request(GET, Uri.of("/other"))).getStatus(), equalTo(NOT_FOUND));
-        assertThat(app.invoke(request(GET, Uri.of("/foo/other"))).getStatus(), equalTo(NOT_FOUND));
+        assertThat(app.invoke(request(GET, "/test")).getStatus(), equalTo(OK));
+        assertThat(app.invoke(request(GET, "/foo/bar")).getStatus(), equalTo(OK));
+        assertThat(app.invoke(request(PUT, "/anymethod")).getStatus(), equalTo(OK));
+        assertThat(app.invoke(request(GET, "/other")).getStatus(), equalTo(NOT_FOUND));
+        assertThat(app.invoke(request(GET, "/foo/other")).getStatus(), equalTo(NOT_FOUND));
     }
 }
 
@@ -69,6 +69,10 @@ interface HttpHandler extends Function1<Request, Response> {
 
 class RequestFactory {
     static Request request(Method method, Uri uri) {
+        return Request.Companion.invoke(method, uri);
+    }
+
+    static Request request(Method method, String uri) {
         return Request.Companion.invoke(method, uri);
     }
 }
