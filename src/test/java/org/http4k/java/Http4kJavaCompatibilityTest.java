@@ -3,7 +3,10 @@ package org.http4k.java;
 import kotlin.jvm.functions.Function1;
 import org.http4k.core.*;
 import org.http4k.routing.RoutingHttpHandler;
+import org.http4k.routing.RoutingKt;
 import org.http4k.routing.TemplateRoutingHttpHandler;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -14,7 +17,7 @@ import static org.http4k.core.Status.OK;
 import static org.http4k.java.RequestFactory.request;
 import static org.http4k.java.ResponseFactory.response;
 import static org.http4k.java.RouteFactory.route;
-import static org.http4k.routing.RoutingKt.routes;
+import static org.http4k.java.RouteFactory.routes;
 import static org.junit.Assert.assertThat;
 
 public class Http4kJavaCompatibilityTest {
@@ -23,7 +26,7 @@ public class Http4kJavaCompatibilityTest {
     public void handler_function() {
         HttpHandler handler = request -> response(OK).body("test");
 
-        Response response = handler.invoke(request(GET, Uri.of("/test")));
+        Response response = handler.handle(request(GET, Uri.of("/test")));
 
         assertThat(response.getStatus(), equalTo(OK));
         assertThat(response.bodyString(), equalTo("test"));
@@ -33,7 +36,7 @@ public class Http4kJavaCompatibilityTest {
     public void routing() {
         HttpHandler handler = request -> response(OK).body("test");
 
-        RoutingHttpHandler app = routes(
+        HttpHandler app = routes(
                 route("/test", GET, handler),
                 route("/foo", route(
                         "/bar", GET, handler
@@ -41,30 +44,67 @@ public class Http4kJavaCompatibilityTest {
                 route("/anymethod", handler)
         );
 
-        assertThat(app.invoke(request(GET, "/test")).getStatus(), equalTo(OK));
-        assertThat(app.invoke(request(GET, "/foo/bar")).getStatus(), equalTo(OK));
-        assertThat(app.invoke(request(PUT, "/anymethod")).getStatus(), equalTo(OK));
-        assertThat(app.invoke(request(GET, "/other")).getStatus(), equalTo(NOT_FOUND));
-        assertThat(app.invoke(request(GET, "/foo/other")).getStatus(), equalTo(NOT_FOUND));
+        assertThat(app.handle(request(GET, "/test")).getStatus(), equalTo(OK));
+        assertThat(app.handle(request(GET, "/foo/bar")).getStatus(), equalTo(OK));
+        assertThat(app.handle(request(PUT, "/anymethod")).getStatus(), equalTo(OK));
+        assertThat(app.handle(request(GET, "/other")).getStatus(), equalTo(NOT_FOUND));
+        assertThat(app.handle(request(GET, "/foo/other")).getStatus(), equalTo(NOT_FOUND));
     }
 }
 
 class RouteFactory {
-    static RoutingHttpHandler route(String template, Method method, HttpHandler handler) {
-        return new TemplateRoutingHttpHandler(method, UriTemplate.Companion.from(template), handler);
+    static RoutingHttpHandlerJava routes(RoutingHttpHandlerJava... routes) {
+        return new RoutingHttpHandlerJava(RoutingKt.routes(routes));
     }
 
-    static RoutingHttpHandler route(String template, HttpHandler handler) {
+    static RoutingHttpHandlerJava route(String template, Method method, HttpHandler handler) {
+        return new RoutingHttpHandlerJava(new TemplateRoutingHttpHandler(method, UriTemplate.Companion.from(template), handler));
+    }
+
+    static RoutingHttpHandlerJava route(String template, HttpHandler handler) {
         return route(template, null, handler);
     }
 
-    static RoutingHttpHandler route(String path, RoutingHttpHandler handler) {
-        return handler.withBasePath(path);
+    static RoutingHttpHandlerJava route(String path, RoutingHttpHandlerJava handler) {
+        return new RoutingHttpHandlerJava(handler.withBasePath(path));
+    }
+}
+
+class RoutingHttpHandlerJava implements HttpHandler, RoutingHttpHandler {
+    private final RoutingHttpHandler delegate;
+
+    RoutingHttpHandlerJava(RoutingHttpHandler delegate) {
+        this.delegate = delegate;
+    }
+
+    @NotNull
+    @Override
+    public RoutingHttpHandlerJava withFilter(@NotNull Filter filter) {
+        return new RoutingHttpHandlerJava(delegate.withFilter(filter));
+    }
+
+    @NotNull
+    @Override
+    public RoutingHttpHandler withBasePath(@NotNull String basePath) {
+        return new RoutingHttpHandlerJava(delegate.withBasePath(basePath));
+    }
+
+    @Override
+    public Response invoke(Request request) {
+        return delegate.invoke(request);
+    }
+
+    @Nullable
+    @Override
+    public Function1<Request, Response> match(@NotNull Request request) {
+        return delegate.match(request);
     }
 }
 
 interface HttpHandler extends Function1<Request, Response> {
-
+    default Response handle(Request request) {
+        return invoke(request);
+    }
 }
 
 class RequestFactory {
