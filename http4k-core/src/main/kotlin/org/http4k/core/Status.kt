@@ -31,6 +31,7 @@ data class Status(val code: Int, val description: String) {
         val UNAUTHORIZED = status(401, "Unauthorized")
         val PAYMENT_REQUIRED = status(402, "Payment Required")
         val FORBIDDEN = status(403, "Forbidden")
+        @JvmField
         val NOT_FOUND = status(404, "Not Found")
         val METHOD_NOT_ALLOWED = status(405, "Method Not Allowed")
         val NOT_ACCEPTABLE = status(406, "Not Acceptable")
