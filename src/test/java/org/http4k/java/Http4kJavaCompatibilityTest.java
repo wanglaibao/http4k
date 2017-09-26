@@ -2,7 +2,15 @@ package org.http4k.java;
 
 import kotlin.jvm.functions.Function1;
 import org.eclipse.jetty.server.Server;
-import org.http4k.core.*;
+import org.http4k.core.Filter;
+import org.http4k.core.Http4kKt;
+import org.http4k.core.Method;
+import org.http4k.core.Request;
+import org.http4k.core.Response;
+import org.http4k.core.Status;
+import org.http4k.core.Uri;
+import org.http4k.core.UriTemplate;
+import org.http4k.filter.DebuggingFilters;
 import org.http4k.routing.RoutingHttpHandler;
 import org.http4k.routing.RoutingKt;
 import org.http4k.routing.TemplateRoutingHttpHandler;
@@ -19,6 +27,7 @@ import static org.http4k.core.Method.GET;
 import static org.http4k.core.Method.PUT;
 import static org.http4k.core.Status.NOT_FOUND;
 import static org.http4k.core.Status.OK;
+import static org.http4k.java.FilterJava.filter;
 import static org.http4k.java.RequestFactory.request;
 import static org.http4k.java.ResponseFactory.response;
 import static org.http4k.java.RouteFactory.route;
@@ -32,7 +41,7 @@ public class Http4kJavaCompatibilityTest {
     public void handler_function() {
         HttpHandler handler = request -> response(OK).body("test");
 
-        Response response = handler.handle(request(GET, "/test"));
+        Response response = handler.handle(request(GET, Uri.of("/test")));
 
         assertThat(response.getStatus(), equalTo(OK));
         assertThat(response.bodyString(), equalTo("test"));
@@ -58,9 +67,49 @@ public class Http4kJavaCompatibilityTest {
     }
 
     @Test
+    public void filters() {
+        HttpHandler handler = request -> response(OK).body("test");
+
+        HttpHandler app =
+            filter(DebuggingFilters.PrintRequestAndResponse.invoke())
+                .then(handler);
+
+        app.handle(request(Method.GET, "/"));
+    }
+
+    @Test
     public void starting_a_server() {
         HttpHandler handler = request -> response(OK).body("test");
         server(handler, new Jetty(new Server())).start();
+    }
+}
+
+class FilterJava implements Filter {
+    private final Filter delegate;
+
+    private FilterJava(Filter delegate) {
+        this.delegate = delegate;
+    }
+
+    public static FilterJava filter(Filter filter) {
+        return new FilterJava(filter);
+    }
+
+    public FilterJava then(Filter another) {
+        return new FilterJava(Http4kKt.then(delegate, another));
+    }
+
+    public RoutingHttpHandlerJava then(RoutingHttpHandler another) {
+        return new RoutingHttpHandlerJava(Http4kKt.then(delegate, another));
+    }
+
+    public HttpHandler then(HttpHandler another) {
+        return Http4kKt.then(delegate, another)::invoke;
+    }
+
+    @Override
+    public Function1<? super Request, ? extends Response> invoke(Function1<? super Request, ? extends Response> function1) {
+        return delegate.invoke(function1);
     }
 }
 
