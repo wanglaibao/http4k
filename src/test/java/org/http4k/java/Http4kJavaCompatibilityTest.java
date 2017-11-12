@@ -71,7 +71,7 @@ public class Http4kJavaCompatibilityTest {
         HttpHandler handler = request -> response(OK).body("test");
 
         HttpHandler app =
-            filter(DebuggingFilters.PrintRequestAndResponse.invoke())
+            filter(DebuggingFilters.PrintRequestAndResponse.create())
                 .then(handler);
 
         app.handle(request(Method.GET, "/"));

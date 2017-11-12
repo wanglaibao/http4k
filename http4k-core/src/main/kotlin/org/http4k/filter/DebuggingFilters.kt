@@ -46,6 +46,7 @@ object DebuggingFilters {
     object PrintRequestAndResponse {
         @JvmStatic
         @JvmOverloads
+        @JvmName("create")
         operator fun invoke(out: PrintStream = System.out, debugStream: Boolean = defaultDebugStream) = PrintRequest(out, debugStream).then(PrintResponse(out, debugStream))
     }
 }
