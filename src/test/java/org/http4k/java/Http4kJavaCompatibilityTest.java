@@ -71,8 +71,10 @@ public class Http4kJavaCompatibilityTest {
         HttpHandler handler = request -> response(OK).body("test");
 
         HttpHandler app =
-            filter(DebuggingFilters.PrintRequestAndResponse.create())
-                .then(handler);
+                filter(DebuggingFilters.PrintRequestAndResponse.create())
+                        .then((Filter) next ->
+                                (HttpHandler) request -> next.invoke(request).header("foo", "bar"))
+                        .then(handler);
 
         app.handle(request(Method.GET, "/"));
     }
