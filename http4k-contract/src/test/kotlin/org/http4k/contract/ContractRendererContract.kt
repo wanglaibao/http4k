@@ -87,11 +87,11 @@ abstract class ContractRendererContract(private val renderer: ContractRenderer) 
                 receiving(Body.json("json").toLens())
             }
                 bindContract POST to HttpHandler { Response(OK) },
-//            "/body_json_schema" meta {
-//                receiving(Body.json("json").toLens() to Jackson {
+            "/body_json_schema" meta {
+                receiving(Body.json("json").toLens() to Jackson {
                     obj("anAnotherObject" to obj("aNullField" to nullNode(), "aNumberField" to number(123))) }, "someDefinitionId")
-//            }
-//                bindContract POST to HttpHandler { Response(OK) },
+            }
+                bindContract POST to HttpHandler { Response(OK) },
             "/body_form" meta {
                 receiving(Body.webForm(Validator.Strict,
                     FormField.boolean().required("b", "booleanField"),
