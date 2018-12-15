@@ -44,7 +44,7 @@ object App {
 
         // define the health app API
         val healthApp = Health(
-                "/config" bind GET to HttpHandler { Response(OK).body(env.toString()) },
+                "/config" bind GET to { Response(OK).body(env.toString()) },
                 checks = listOf(DatabaseCheck(
                         RandomlyFailingDatabase(dbRole(env), dbPassword(env)
                         )))
