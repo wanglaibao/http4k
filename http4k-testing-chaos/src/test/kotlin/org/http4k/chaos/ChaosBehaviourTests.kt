@@ -4,6 +4,7 @@ import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.throws
+import kotlinx.coroutines.runBlocking
 import org.http4k.chaos.ChaosBehaviours.KillProcess
 import org.http4k.chaos.ChaosBehaviours.Latency
 import org.http4k.chaos.ChaosBehaviours.NoBody
@@ -49,7 +50,7 @@ class ThrowExceptionBehaviourTest : ChaosBehaviourContract() {
         val throwException = ThrowException(expected)
         assertThat(throwException.toString(), equalTo(description))
 
-        assertThat({ throwException.then { response }(request) }, throws(equalTo(expected)))
+        assertThat({ runBlocking { throwException.then { response }(request) } }, throws(equalTo(expected)))
     }
 
     @Test
@@ -57,7 +58,7 @@ class ThrowExceptionBehaviourTest : ChaosBehaviourContract() {
         val behaviour = """{"type":"throw","message":"foo"}""".asJsonObject().asBehaviour()
         assertThat(behaviour.toString(), equalTo("ThrowException RuntimeException foo"))
 
-        assertThat({ behaviour.then { response }(request) }, throws<Exception>())
+        assertThat({ runBlocking { behaviour.then { response }(request) } }, throws<Exception>())
     }
 }
 
@@ -76,7 +77,7 @@ class LatencyBehaviourTest : ChaosBehaviourContract() {
     }
 
     @Test
-    override fun `deserialises from JSON`() {
+    override fun `deserialises from JSON`() = runBlocking {
         assertBehaviour("""{"type":"latency","min":"PT0.1S","max":"PT0.3S"}""",
                 description,
                 hasStatus(Status.OK).and(hasHeader("x-http4k-chaos", Regex("Latency.*"))))
@@ -90,7 +91,7 @@ class LatencyBehaviourTest : ChaosBehaviourContract() {
 
         val latch = CountDownLatch(1)
         thread {
-            latency.then { response }(request)
+            runBlocking { latency.then { response }(request) }
             latch.countDown()
         }
         assertThat(latch.await(delay - 1, MILLISECONDS), equalTo(false))
@@ -101,7 +102,7 @@ class ReturnStatusBehaviourTest : ChaosBehaviourContract() {
     val description = "ReturnStatus (404)"
 
     @Test
-    fun `should return response with internal server error status`() {
+    fun `should return response with internal server error status`() = runBlocking {
         val returnStatus: Behaviour = ReturnStatus(NOT_FOUND)
         assertThat(returnStatus.toString(), equalTo(description))
 
@@ -110,7 +111,7 @@ class ReturnStatusBehaviourTest : ChaosBehaviourContract() {
     }
 
     @Test
-    override fun `deserialises from JSON`() {
+    override fun `deserialises from JSON`() = runBlocking {
         assertBehaviour("""{"type":"status","status":404}""",
                 description,
                 hasStatus(NOT_FOUND.description("x-http4k-chaos")).and(hasHeader("x-http4k-chaos", Regex("Status 404"))))
@@ -121,7 +122,7 @@ class NoBodyBehaviourTest : ChaosBehaviourContract() {
     val description = "NoBody"
 
     @Test
-    fun `should return no body`() {
+    fun `should return no body`() = runBlocking {
         val noBody = NoBody()
         assertThat(noBody.toString(), equalTo(description))
 
@@ -129,7 +130,7 @@ class NoBodyBehaviourTest : ChaosBehaviourContract() {
     }
 
     @Test
-    override fun `deserialises from JSON`() {
+    override fun `deserialises from JSON`() = runBlocking {
         assertBehaviour("""{"type":"body"}""",
                 description,
                 hasStatus(OK).and(hasHeader("x-http4k-chaos", "No body")))
@@ -140,12 +141,12 @@ class BlockThreadBehaviourTest : ChaosBehaviourContract() {
     val description = "BlockThread"
 
     @Test
-    fun `should block thread`() {
+    fun `should block thread`() = runBlocking {
         val blockThread = ChaosBehaviours.BlockThread()
         assertThat(blockThread.toString(), equalTo(description))
         val latch = CountDownLatch(1)
         thread {
-            blockThread.then { response }(request)
+            runBlocking { blockThread.then { response }(request) }
             latch.countDown()
         }
 
@@ -167,7 +168,9 @@ class EatMemoryBehaviourTest : ChaosBehaviourContract() {
         val eatMemory = ChaosBehaviours.EatMemory()
         assertThat(eatMemory.toString(), equalTo(description))
 
-        assertThat({ eatMemory.then { response }(request) }, throws<OutOfMemoryError>())
+        assertThat({
+            runBlocking { eatMemory.then { response }(request) }
+        }, throws<OutOfMemoryError>())
     }
 
     @Test
@@ -181,7 +184,7 @@ class DoNothingBehaviourTest : ChaosBehaviourContract() {
     private val description = "None"
 
     @Test
-    fun `should do nothing memory`() {
+    fun `should do nothing memory`() = runBlocking {
         assertThat(None().toString(), equalTo(description))
 
         assertThat(None().then { response }(request), equalTo(response))
@@ -199,7 +202,7 @@ class StackOverflowBehaviourTest : ChaosBehaviourContract() {
 
     @Test
     @Disabled // untestable
-    fun `should stack overflow`() {
+    fun `should stack overflow`() = runBlocking {
         val stackOverflow = StackOverflow()
         assertThat(stackOverflow.toString(), equalTo(description))
         stackOverflow.then { response }(request)
@@ -218,7 +221,7 @@ class KillProcessBehaviourTest : ChaosBehaviourContract() {
 
     @Test
     @Disabled // untestable
-    fun `should kill process`() {
+    fun `should kill process`() = runBlocking {
         val killProcess = KillProcess()
         assertThat(killProcess.toString(), equalTo(description))
         killProcess.then { response }(request)
@@ -233,7 +236,7 @@ class KillProcessBehaviourTest : ChaosBehaviourContract() {
 
 class VariableBehaviourTest {
     @Test
-    fun `should provide ability to modify behaviour at runtime`() {
+    fun `should provide ability to modify behaviour at runtime`() = runBlocking {
         val variable = Variable()
         assertThat(variable.toString(), equalTo(("None")))
         assertThat(variable.then { response }(request), equalTo(response))

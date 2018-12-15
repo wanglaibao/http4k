@@ -3,6 +3,8 @@ package org.http4k.chaos
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import com.natpryce.hamkrest.should.shouldMatch
+import kotlinx.coroutines.runBlocking
 
 import org.http4k.chaos.ChaosBehaviours.ReturnStatus
 import org.http4k.chaos.ChaosStages.Repeat
@@ -10,6 +12,7 @@ import org.http4k.chaos.ChaosStages.Variable
 import org.http4k.chaos.ChaosStages.Wait
 import org.http4k.chaos.ChaosTriggers.Always
 import org.http4k.core.Filter
+import org.http4k.core.HttpHandler
 import org.http4k.core.Method.DELETE
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.OPTIONS
@@ -51,7 +54,7 @@ class WaitTest : ChaosStageContract() {
     override val expectedDescription = "Wait"
 
     @Test
-    fun `Wait does not match the response`() {
+    fun `Wait does not match the response`() = runBlocking {
         val app = Wait.asFilter().then { response }
         assertThat(app(Request(GET, "")), equalTo(response))
     }
@@ -67,7 +70,7 @@ class RepeatTest : ChaosStageContract() {
     override val expectedDescription = "Repeat [Wait]"
 
     @Test
-    fun `repeat starts again at the beginning`() {
+    fun `repeat starts again at the beginning`() = runBlocking {
         val app = Repeat {
             chaosStage(I_M_A_TEAPOT).until { it.method == POST }
                     .then(chaosStage(NOT_FOUND).until { it.method == OPTIONS })
@@ -87,7 +90,7 @@ class RepeatTest : ChaosStageContract() {
 
 class VariableStageTest {
     @Test
-    fun `should provide ability to modify stage at runtime`() {
+    fun `should provide ability to modify stage at runtime`() = runBlocking {
         val variable = Variable()
         assertThat(variable.toString(), equalTo(("Always None")))
         assertThat(variable(request)!!.then { response }(request), equalTo(response))
@@ -99,7 +102,7 @@ class VariableStageTest {
 
 class ChaosStageOperationsTest {
     @Test
-    fun `until stops when the trigger is hit`() {
+    fun `until stops when the trigger is hit`() = runBlocking {
         val app = chaosStage(NOT_FOUND).until { it.method == POST }
                 .asFilter().then { response }
 
@@ -109,7 +112,7 @@ class ChaosStageOperationsTest {
     }
 
     @Test
-    fun `then moves onto the next stage`() {
+    fun `then moves onto the next stage`() = runBlocking {
         val app = chaosStage(I_M_A_TEAPOT).until { it.method == POST }
                 .then(chaosStage(NOT_FOUND).until { it.method == TRACE })
                 .then(chaosStage(INTERNAL_SERVER_ERROR))
@@ -124,5 +127,5 @@ class ChaosStageOperationsTest {
 }
 
 private fun chaosStage(status: Status): Stage = object : Stage {
-    override fun invoke(tx: Request) = Filter { { Response(status) } }
+    override fun invoke(tx: Request) = Filter { HttpHandler { Response(status) } }
 }
