@@ -4,6 +4,7 @@ import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import guide.example._4_adding_an_external_dependency.Matchers.answerShouldBe
+import kotlinx.coroutines.runBlocking
 import org.http4k.client.OkHttp
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
@@ -41,7 +42,7 @@ abstract class RecorderCdc {
     abstract val client: HttpHandler
 
     @Test
-    fun `records answer`() {
+    fun `records answer`() = runBlocking {
         Recorder(client).record(123)
         checkAnswerRecorded()
     }
@@ -56,7 +57,7 @@ class FakeRecorderHttp : HttpHandler {
 
     private val app = CatchLensFailure.then(
         routes(
-            "/{answer}" bind POST to { request -> calls.add(answer.extract(request)); Response(ACCEPTED) }
+            "/{answer}" bind POST to HttpHandler { request -> calls.add(answer.extract(request)); Response(ACCEPTED) }
         )
     )
 
@@ -97,7 +98,7 @@ class EndToEndTest {
     }
 
     @Test
-    fun `all endpoints are mounted correctly`() {
+    fun `all endpoints are mounted correctly`() = runBlocking {
         assertThat(client(Request(GET, "http://localhost:$port/ping")), hasStatus(OK))
         client(Request(GET, "http://localhost:$port/add?value=1&value=2")).answerShouldBe(3)
         client(Request(GET, "http://localhost:$port/multiply?value=2&value=4")).answerShouldBe(8)
@@ -113,19 +114,19 @@ class AddFunctionalTest {
     private val env = AppEnvironment()
 
     @Test
-    fun `adds values together`() {
+    fun `adds values together`() = runBlocking {
         env.client(Request(GET, "/add?value=1&value=2")).answerShouldBe(3)
         assertThat(env.recorder.calls, equalTo(listOf(3)))
     }
 
     @Test
-    fun `answer is zero when no values`() {
+    fun `answer is zero when no values`() = runBlocking {
         env.client(Request(GET, "/add")).answerShouldBe(0)
         assertThat(env.recorder.calls, equalTo(listOf(0)))
     }
 
     @Test
-    fun `bad request when some values are not numbers`() {
+    fun `bad request when some values are not numbers`() = runBlocking {
         assertThat(env.client(Request(GET, "/add?value=1&value=notANumber")), hasStatus(BAD_REQUEST))
         assertThat(env.recorder.calls.isEmpty(), equalTo(true))
     }
@@ -135,19 +136,19 @@ class MultiplyFunctionalTest {
     private val env = AppEnvironment()
 
     @Test
-    fun `products values together`() {
+    fun `products values together`() = runBlocking {
         env.client(Request(GET, "/multiply?value=2&value=4")).answerShouldBe(8)
         assertThat(env.recorder.calls, equalTo(listOf(8)))
     }
 
     @Test
-    fun `answer is zero when no values`() {
+    fun `answer is zero when no values`() = runBlocking {
         env.client(Request(GET, "/multiply")).answerShouldBe(0)
         assertThat(env.recorder.calls, equalTo(listOf(0)))
     }
 
     @Test
-    fun `bad request when some values are not numbers`() {
+    fun `bad request when some values are not numbers`() = runBlocking {
         assertThat(env.client(Request(GET, "/multiply?value=1&value=notANumber")), hasStatus(BAD_REQUEST))
         assertThat(env.recorder.calls.isEmpty(), equalTo(true))
     }

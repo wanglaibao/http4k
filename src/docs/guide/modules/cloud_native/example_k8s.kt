@@ -11,6 +11,8 @@ import org.http4k.cloudnative.health.Health
 import org.http4k.cloudnative.health.ReadinessCheck
 import org.http4k.cloudnative.health.ReadinessCheckResult
 import org.http4k.core.Filter
+import org.http4k.core.HttpHandler
+import org.http4k.core.Filter
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -42,7 +44,7 @@ object App {
 
         // define the health app API
         val healthApp = Health(
-                "/config" bind GET to { Response(OK).body(env.toString()) },
+                "/config" bind GET to HttpHandler { Response(OK).body(env.toString()) },
                 checks = listOf(DatabaseCheck(
                         RandomlyFailingDatabase(dbRole(env), dbPassword(env)
                         )))
@@ -51,7 +53,7 @@ object App {
     }
 
     private val rewriteUriToLocalhostAsWeDoNotHaveDns = Filter { next ->
-        {
+        HttpHandler {
             println("Rewriting ${it.uri} so we can proxy properly")
             next(it.uri(it.uri.authority("localhost:9000")))
         }
@@ -84,7 +86,7 @@ database.user.role=admin
 database.user.password=myPassword
  */
 
-fun main() {
+suspend fun main() {
     val defaultConfig = Environment.defaults(
             EnvironmentKey.k8s.SERVICE_PORT of 8000,
             EnvironmentKey.k8s.HEALTH_PORT of 8001,
@@ -98,7 +100,7 @@ fun main() {
             defaultConfig
 
     // the end-server that we will proxy to
-    val upstream = { _: Request -> Response(Status.OK).body("HELLO!") }.asServer(SunHttp(9000)).start()
+    val upstream = HttpHandler { Response(Status.OK).body("HELLO!") }.asServer(SunHttp(9000)).start()
 
     val server = App(k8sPodEnv).start()
 
@@ -108,7 +110,7 @@ fun main() {
     upstream.stop()
 }
 
-private fun performHealthChecks() {
+private suspend fun performHealthChecks() {
     val client = DebuggingFilters.PrintResponse().then(JavaHttpClient())
 
     // health checks

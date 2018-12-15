@@ -1,6 +1,8 @@
 package guide.testing
 
 import com.natpryce.hamkrest.and
+import com.natpryce.hamkrest.should.shouldMatch
+import kotlinx.coroutines.runBlocking
 import com.natpryce.hamkrest.assertion.assertThat
 
 import org.http4k.core.Filter
@@ -22,7 +24,7 @@ val AddLatency = Filter { next ->
 
 class FilterTest {
     @Test
-    fun `adds a special header`() {
+    fun `adds a special header`() = runBlocking {
         val handler: HttpHandler = AddLatency.then { Response(OK) }
         val response: Response = handler(Request(GET, "/echo/my+great+message"))
         assertThat(response, hasStatus(OK).and(hasHeader("x-extra-header", "some value")))
