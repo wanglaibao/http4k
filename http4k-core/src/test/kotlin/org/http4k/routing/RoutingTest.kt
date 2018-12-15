@@ -202,7 +202,7 @@ class RoutingTest {
 
         var count = 0
         val filter = Filter { next ->
-            {
+            HttpHandler {
                 next(it.replaceHeader("header", "value" + count++))
             }
         }
@@ -262,7 +262,7 @@ class RoutingTest {
 
     @Test
     fun `can apply a filter to a RoutingHttpHandler`() {
-        val routes = Filter { next -> { next(it.header("name", "value")) } }
+        val routes = Filter { next -> HttpHandler { next(it.header("name", "value")) } }
             .then { Response(OK).body(it.header("name")!!) }
 
         val routingHttpHandler = routes(
@@ -273,7 +273,7 @@ class RoutingTest {
 
     @Test
     fun `RoutingHttpHandler with filters also applies when route is not found`() {
-        val filter = Filter { next -> { next(it).body("value") } }
+        val filter = Filter { next -> HttpHandler { next(it).body("value") } }
 
         val routingHttpHandler = filter.then(routes(
             "/a/thing" bind GET to { Response(OK) }
@@ -284,7 +284,7 @@ class RoutingTest {
 
     @Test
     fun `can apply a filter to a Router`() {
-        val routes = Filter { next -> { next(it.header("name", "value")) } }
+        val routes = Filter { next -> HttpHandler { next(it.header("name", "value")) } }
             .then(routes(
                 "/a/thing" bind GET to { Response(OK).body(it.header("name")!!) }
             ))

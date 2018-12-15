@@ -45,7 +45,7 @@ fun greetRoute(): ContractRoute {
 
     // the this function will dynamically supply a new HttpHandler for each call. The number of parameters
     // matches the number of dynamic sections in the path (1)
-    fun greet(nameFromPath: String): HttpHandler = { request: Request ->
+    fun greet(nameFromPath: String) = HttpHandler { request: Request ->
         val age = ageQuery(request)
         val sentMessage = stringBody(request)
 

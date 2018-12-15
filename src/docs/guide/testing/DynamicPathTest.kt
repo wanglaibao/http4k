@@ -1,6 +1,7 @@
 package guide.testing
 
 import com.natpryce.hamkrest.and
+import kotlinx.coroutines.runBlocking
 import com.natpryce.hamkrest.assertion.assertThat
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
@@ -19,7 +20,7 @@ val EchoPath = "/echo/{message}" bind GET to { r -> Response(OK).body(r.path("me
 class DynamicPathTest {
 
     @Test
-    fun `echoes body from path`() {
+    fun `echoes body from path`() = runBlocking {
         val route: RoutingHttpHandler = routes(EchoPath)
         val response: Response = route(Request(GET, "/echo/my+great+message"))
         assertThat(response, hasStatus(OK).and(hasBody("my great message")))

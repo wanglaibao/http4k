@@ -69,8 +69,8 @@ abstract class RoutingHttpHandlerContract {
     }
 
     private fun filterAppending(value: String) = Filter { next ->
-        {
-            next(it).replaceHeader("res-header", next(it).header("res-header").orEmpty() + value)
+        HttpHandler {
+                next(it).replaceHeader("res-header", next(it).header("res-header").orEmpty() + value)
         }
     }
 }
