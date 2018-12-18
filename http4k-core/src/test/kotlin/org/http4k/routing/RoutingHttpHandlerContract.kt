@@ -4,7 +4,6 @@ import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import kotlinx.coroutines.runBlocking
 import org.http4k.core.Filter
-import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Status.Companion.NOT_FOUND
@@ -71,7 +70,7 @@ abstract class RoutingHttpHandlerContract {
     }
 
     private fun filterAppending(value: String) = Filter { next ->
-        HttpHandler {
+        {
             next(it).replaceHeader("res-header", next(it).header("res-header").orEmpty() + value)
         }
     }

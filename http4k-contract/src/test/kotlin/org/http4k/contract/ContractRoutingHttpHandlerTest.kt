@@ -58,7 +58,7 @@ class ContractRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     @Test
     fun `passes through contract filter`() = runBlocking {
         val filter = Filter { next ->
-            HttpHandler { next(it.with(header of "true")) }
+            { next(it.with(header of "true")) }
         }
 
         val root = "/root" bind contract(SimpleJson(Jackson), "/docs",
@@ -132,7 +132,7 @@ class ContractRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
         val root = "/root" bind contract(SimpleJson(Jackson), "", ApiKey(Query.required("key"), { it == "bob" }),
             "/bob" bindContract GET to HttpHandler { Response(OK) }
         ).withFilter(Filter { next ->
-            HttpHandler {
+            {
                 next(it.query("key", "bob"))
             }
         })
@@ -145,7 +145,7 @@ class ContractRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
         val root = "/root" bind contract(SimpleJson(Jackson), "", ApiKey(Query.required("key"), { it == "bob" }),
             "/bob" bindContract GET to HttpHandler { Response(OK).body(it.body) }
         ).withPostSecurityFilter(Filter { next ->
-            HttpHandler {
+            {
                 next(it.body("body"))
             }
         })
@@ -173,7 +173,7 @@ class ContractRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     @Test
     fun `only calls filters once`() = runBlocking {
         val filter = Filter { next ->
-            HttpHandler {
+            {
                 next(it.header("foo", "bar"))
             }
         }
