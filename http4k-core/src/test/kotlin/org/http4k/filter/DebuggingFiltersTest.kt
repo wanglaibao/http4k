@@ -30,7 +30,7 @@ class DebuggingFiltersTest {
     }
 
     @Test
-    fun `prints request and response when handler blows up`() {
+    fun `prints request and response when handler blows up`() = runBlocking {
         val os = ByteArrayOutputStream()
         val req = Request(Method.GET, "")
         try {
