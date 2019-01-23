@@ -21,7 +21,7 @@ import org.http4k.server.ServerConfig
 import org.http4k.server.asServer
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import java.util.Arrays
+import java.util.*
 
 abstract class AbstractHttpClientContract(private val serverConfig: (Int) -> ServerConfig) {
 
@@ -59,7 +59,7 @@ abstract class AbstractHttpClientContract(private val serverConfig: (Int) -> Ser
                 Response(OK)
             },
             "/echo" bind routes(
-                DELETE to { request: Request -> Response(OK).body("delete") },
+                    DELETE to { _: Request -> Response(OK).body("delete") },
                 GET to { request: Request -> Response(OK).body(request.uri.toString()) },
                 POST to { request: Request -> Response(OK).body(request.bodyString()) }
             ),

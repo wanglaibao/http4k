@@ -1,5 +1,6 @@
 package org.http4k.server
 
+import kotlinx.coroutines.runBlocking
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory
 import org.eclipse.jetty.http2.HTTP2Cipher.COMPARATOR
 import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory
@@ -43,8 +44,10 @@ class Jetty(private val port: Int, private val server: Server) : WsServerConfig 
 internal fun WsHandler.toJettyHandler() = object : WebSocketHandler() {
     override fun configure(factory: WebSocketServletFactory) {
         factory.setCreator { req, _ ->
-            val request = req.asHttp4kRequest()
-            this@toJettyHandler(request)?.let { Http4kWebSocketListener(it, request) }
+            runBlocking {
+                val request = req.asHttp4kRequest()
+                this@toJettyHandler(request)?.let { Http4kWebSocketListener(it, request) }
+            }
         }
     }
 }
@@ -58,23 +61,23 @@ typealias ConnectorBuilder = (Server) -> ServerConnector
 fun http(httpPort: Int): ConnectorBuilder = { server: Server -> ServerConnector(server).apply { port = httpPort } }
 
 fun http2(http2Port: Int, keystorePath: String, keystorePassword: String): ConnectorBuilder =
-    { server: Server ->
-        ServerConnector(server,
-            SslConnectionFactory(
-                SslContextFactory().apply {
-                    keyStorePath = keystorePath
-                    setKeyStorePassword(keystorePassword)
-                    cipherComparator = COMPARATOR
-                    provider = "Conscrypt"
-                },
-                "alpn"),
-            ALPNServerConnectionFactory().apply {
-                defaultProtocol = "h2"
-            },
-            HTTP2ServerConnectionFactory(HttpConfiguration().apply {
-                sendServerVersion = false
-                secureScheme = "https"
-                securePort = http2Port
-                addCustomizer(SecureRequestCustomizer())
-            })).apply { port = http2Port }
-    }
+        { server: Server ->
+            ServerConnector(server,
+                    SslConnectionFactory(
+                            SslContextFactory().apply {
+                                keyStorePath = keystorePath
+                                setKeyStorePassword(keystorePassword)
+                                cipherComparator = COMPARATOR
+                                provider = "Conscrypt"
+                            },
+                            "alpn"),
+                    ALPNServerConnectionFactory().apply {
+                        defaultProtocol = "h2"
+                    },
+                    HTTP2ServerConnectionFactory(HttpConfiguration().apply {
+                        sendServerVersion = false
+                        secureScheme = "https"
+                        securePort = http2Port
+                        addCustomizer(SecureRequestCustomizer())
+                    })).apply { port = http2Port }
+        }

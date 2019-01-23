@@ -2,13 +2,13 @@ package org.http4k.core
 
 import org.http4k.routing.RoutingHttpHandler
 
-typealias RespondAsync = suspend (Request) -> Response
+typealias HandleRequest = suspend (Request) -> Response
 
 interface HttpHandler {
     suspend operator fun invoke(request: Request): Response
 
     companion object {
-        operator fun invoke(fn: RespondAsync) = object : HttpHandler {
+        operator fun invoke(fn: HandleRequest) = object : HttpHandler {
             override suspend operator fun invoke(request: Request): Response = fn(request)
         }
     }
@@ -18,7 +18,7 @@ interface Filter {
     suspend operator fun invoke(next: HttpHandler): HttpHandler
 
     companion object {
-        operator fun invoke(fn: suspend (RespondAsync) -> RespondAsync) = object : Filter {
+        operator fun invoke(fn: suspend (HandleRequest) -> HandleRequest) = object : Filter {
             override suspend operator fun invoke(next: HttpHandler) = HttpHandler(fn(next::invoke))
         }
     }
@@ -26,7 +26,7 @@ interface Filter {
 
 val Filter.Companion.NoOp: Filter get() = Filter { next -> { next(it) } }
 
-fun Filter.then(fn: RespondAsync) = then(HttpHandler(fn))
+fun Filter.then(fn: HandleRequest) = then(HttpHandler(fn))
 
 fun Filter.then(next: Filter) = Filter { this(next(HttpHandler(it)))::invoke }
 

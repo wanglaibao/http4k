@@ -3,14 +3,15 @@ package org.http4k.routing
 import org.http4k.core.Body
 import org.http4k.core.ContentType
 import org.http4k.core.Filter
+import org.http4k.core.HandleRequest
 import org.http4k.core.Headers
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method
 import org.http4k.core.Request
-import org.http4k.core.RespondAsync
 import org.http4k.core.Response
 import org.http4k.core.Uri
 import org.http4k.core.UriTemplate
+import org.http4k.websocket.HandleWs
 import org.http4k.websocket.WsConsumer
 import org.http4k.websocket.WsHandler
 import java.io.InputStream
@@ -61,10 +62,10 @@ interface RoutingWsHandler : WsHandler {
     fun withBasePath(new: String): RoutingWsHandler
 }
 
-fun websockets(ws: WsConsumer): WsHandler = { ws }
+fun websockets(ws: WsConsumer): WsHandler = WsHandler { ws }
 
 fun websockets(vararg list: RoutingWsHandler): RoutingWsHandler = object : RoutingWsHandler {
-    override operator fun invoke(request: Request): WsConsumer? = list.firstOrNull { it(request) != null }?.invoke(request)
+    override suspend operator fun invoke(request: Request): WsConsumer? = list.firstOrNull { it(request) != null }?.invoke(request)
     override fun withBasePath(new: String): RoutingWsHandler = websockets(*list.map { it.withBasePath(new) }.toTypedArray())
 }
 
@@ -93,9 +94,11 @@ infix fun String.bind(method: Method): PathMethod = PathMethod(this, method)
 
 infix fun String.bind(httpHandler: RoutingHttpHandler): RoutingHttpHandler = httpHandler.withBasePath(this)
 
-infix fun String.bind(fn: RespondAsync): RoutingHttpHandler = bind(HttpHandler(fn))
+infix fun String.bind(fn: HandleRequest): RoutingHttpHandler = bind(HttpHandler(fn))
 
 infix fun String.bind(action: HttpHandler): RoutingHttpHandler = TemplateRoutingHttpHandler(null, UriTemplate.from(this), action)
+
+infix fun String.bind(fn: HandleWs): RoutingWsHandler = bind(WsConsumer(fn))
 
 infix fun String.bind(consumer: WsConsumer): RoutingWsHandler = TemplateRoutingWsHandler(UriTemplate.from(this), consumer)
 

@@ -91,7 +91,7 @@ abstract class ContractRendererContract(private val renderer: ContractRenderer) 
                 receiving(Body.json("json").toLens() to Jackson {
                     obj("anAnotherObject" to obj("aNullField" to nullNode(), "aNumberField" to number(123))) }, "someDefinitionId")
             }
-                bindContract POST to { r: Request -> Response(OK) },
+                    bindContract POST to { _: Request -> Response(OK) },
             "/body_form" meta {
                 receiving(Body.webForm(Validator.Strict,
                     FormField.boolean().required("b", "booleanField"),

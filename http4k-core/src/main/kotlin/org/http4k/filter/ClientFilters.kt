@@ -3,9 +3,9 @@ package org.http4k.filter
 import org.http4k.base64Encode
 import org.http4k.core.Credentials
 import org.http4k.core.Filter
+import org.http4k.core.HandleRequest
 import org.http4k.core.Method
 import org.http4k.core.Request
-import org.http4k.core.RespondAsync
 import org.http4k.core.Response
 import org.http4k.core.Uri
 import org.http4k.core.cookie.cookie
@@ -86,7 +86,7 @@ object ClientFilters {
     object FollowRedirects {
         operator fun invoke() = Filter { next -> { makeRequest(next, it) } }
 
-        private suspend fun makeRequest(next: RespondAsync, request: Request, attempt: Int = 1): Response =
+        private suspend fun makeRequest(next: HandleRequest, request: Request, attempt: Int = 1): Response =
             next(request).let {
                 if (it.isRedirection()) {
                     if (attempt == 10) throw IllegalStateException("Too many redirection")

@@ -5,11 +5,12 @@ import org.http4k.core.Uri
 import org.http4k.server.Jetty
 import org.http4k.server.asServer
 import org.http4k.websocket.Websocket
+import org.http4k.websocket.WsConsumer
 import org.http4k.websocket.WsMessage
 import java.time.Instant
 
 fun `ticking websocket clock`() =
-    { ws: Websocket ->
+        WsConsumer { ws: Websocket ->
         while (true) {
             ws.send(WsMessage(Instant.now().toString()))
             Thread.sleep(1000)
