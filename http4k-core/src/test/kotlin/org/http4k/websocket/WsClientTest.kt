@@ -61,7 +61,7 @@ class WsClientTest {
 
     @Test
     fun `sends inbound messages to the client`() {
-        val client = WsHandler { r: Request ->
+        val client = WsHandler { _: Request ->
             WsConsumer { ws: Websocket ->
                 ws.send(message)
                 ws.close(NEVER_CONNECTED)
@@ -74,7 +74,7 @@ class WsClientTest {
 
     @Test
     fun `closed websocket throws when read attempted`() {
-        val client = WsHandler { r: Request ->
+        val client = WsHandler { _: Request ->
             WsConsumer { ws: Websocket ->
                 ws.close(NEVER_CONNECTED)
             }

@@ -19,5 +19,5 @@ class GenerateXmlDataClasses(out: PrintStream = System.out,
         }
     })
 
-    override suspend fun invoke(p1: HttpHandler) = HttpHandler { chains.then(p1)(it) }
+    override suspend fun invoke(next: HttpHandler) = HttpHandler { chains.then(next)(it) }
 }
