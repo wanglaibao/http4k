@@ -127,10 +127,6 @@ class NoBodyBehaviourTest : ChaosBehaviourContract() {
         assertThat(noBody.toString(), equalTo(description))
 
         assertThat(noBody.then { response }(request), hasHeader("x-http4k-chaos", "No body").and(hasBody("")))
-<<<<<<< HEAD
-=======
-        Unit
->>>>>>> replace shouldMatch with assertThat
     }
 
     @Test
@@ -192,10 +188,6 @@ class DoNothingBehaviourTest : ChaosBehaviourContract() {
         assertThat(None().toString(), equalTo(description))
 
         assertThat(None().then { response }(request), equalTo(response))
-<<<<<<< HEAD
-=======
-        Unit
->>>>>>> replace shouldMatch with assertThat
     }
 
     @Test
@@ -251,9 +243,5 @@ class VariableBehaviourTest {
         variable.current = NoBody()
         assertThat(variable.toString(), equalTo(("NoBody")))
         assertThat(variable.then { response }(request), hasHeader("x-http4k-chaos", "No body").and(hasBody("")))
-<<<<<<< HEAD
-=======
-        Unit
->>>>>>> replace shouldMatch with assertThat
     }
 }
