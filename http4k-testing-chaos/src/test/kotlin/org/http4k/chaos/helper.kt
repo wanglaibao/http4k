@@ -3,7 +3,6 @@ package org.http4k.chaos
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-
 import org.http4k.core.HttpTransaction
 import org.http4k.core.Method.GET
 import org.http4k.core.Request

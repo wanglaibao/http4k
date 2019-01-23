@@ -2,7 +2,6 @@ package guide.example._3_adding_the_second_endpoint
 
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
-
 import guide.example._3_adding_the_second_endpoint.Matchers.answerShouldBe
 import kotlinx.coroutines.runBlocking
 import org.http4k.client.OkHttp
@@ -18,8 +17,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.Random
 
-
 object Matchers {
+
     fun Response.answerShouldBe(expected: Int) {
         assertThat(this, hasStatus(OK).and(hasBody(expected.toString())))
     }
@@ -31,12 +30,12 @@ class EndToEndTest {
     private val server = MyMathServer(port)
 
     @BeforeEach
-    fun setup() {
+    fun setup(): Unit {
         server.start()
     }
 
     @AfterEach
-    fun teardown() {
+    fun teardown(): Unit {
         server.stop()
     }
 
@@ -64,6 +63,7 @@ class AddFunctionalTest {
     @Test
     fun `bad request when some values are not numbers`() = runBlocking {
         assertThat(client(Request(GET, "/add?value=1&value=notANumber")), hasStatus(BAD_REQUEST))
+        Unit
     }
 }
 
@@ -83,5 +83,6 @@ class MultiplyFunctionalTest {
     @Test
     fun `bad request when some values are not numbers`() = runBlocking {
         assertThat(client(Request(GET, "/multiply?value=1&value=notANumber")), hasStatus(BAD_REQUEST))
+        Unit
     }
 }

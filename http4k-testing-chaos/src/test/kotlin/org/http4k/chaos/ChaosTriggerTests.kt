@@ -3,8 +3,6 @@ package org.http4k.chaos
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-
-import com.natpryce.hamkrest.should.shouldMatch
 import kotlinx.coroutines.runBlocking
 import org.http4k.chaos.ChaosBehaviours.ReturnStatus
 import org.http4k.chaos.ChaosTriggers.Always
@@ -162,6 +160,7 @@ class AlwaysTest : ChaosTriggerContract() {
     fun `Always applies by defaul`() = runBlocking {
         val http = ReturnStatus(INTERNAL_SERVER_ERROR).appliedWhen(Always()).asFilter().then { Response(OK) }
         assertThat(http(Request(GET, "/foo")), hasStatus(INTERNAL_SERVER_ERROR).and(hasBody("")).and(hasHeader("x-http4k-chaos", "Status 500")))
+        Unit
     }
 }
 
@@ -180,6 +179,7 @@ class PercentageBasedTest : ChaosTriggerContract() {
     fun `PercentageBased applied`() = runBlocking {
         val http = ReturnStatus(INTERNAL_SERVER_ERROR).appliedWhen(PercentageBased(100)).asFilter().then { Response(OK) }
         assertThat(http(Request(GET, "/foo")), hasStatus(INTERNAL_SERVER_ERROR).and(hasBody("")).and(hasHeader("x-http4k-chaos", "Status 500")))
+        Unit
     }
 }
 
@@ -201,6 +201,7 @@ class OnceTest : ChaosTriggerContract() {
         assertThat(http(Request(GET, "/foo")), hasStatus(INTERNAL_SERVER_ERROR))
         assertThat(http(Request(POST, "/foo")), hasStatus(OK))
         assertThat(http(Request(GET, "/foo")), hasStatus(OK))
+        Unit
     }
 }
 
@@ -216,6 +217,7 @@ class ChaosPolicyOperationTest {
         assertThat(http(Request(GET, "/foo")), hasStatus(INTERNAL_SERVER_ERROR).and(hasHeader("x-http4k-chaos", "Status 500")))
         assertThat(http(Request(POST, "/bar")), hasStatus(OK).and(!hasHeader("x-http4k-chaos")))
         assertThat(http(Request(GET, "/bar")), hasStatus(OK).and(!hasHeader("x-http4k-chaos")))
+        Unit
     }
 }
 

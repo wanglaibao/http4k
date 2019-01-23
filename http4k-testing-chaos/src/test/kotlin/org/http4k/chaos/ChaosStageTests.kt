@@ -3,9 +3,7 @@ package org.http4k.chaos
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import com.natpryce.hamkrest.should.shouldMatch
 import kotlinx.coroutines.runBlocking
-
 import org.http4k.chaos.ChaosBehaviours.ReturnStatus
 import org.http4k.chaos.ChaosStages.Repeat
 import org.http4k.chaos.ChaosStages.Variable
@@ -56,6 +54,7 @@ class WaitTest : ChaosStageContract() {
     fun `Wait does not match the response`() = runBlocking {
         val app = Wait.asFilter().then { response }
         assertThat(app(Request(GET, "")), equalTo(response))
+        Unit
     }
 }
 
@@ -84,6 +83,7 @@ class RepeatTest : ChaosStageContract() {
         assertThat(app(Request(GET, "")), equalTo(Response(GATEWAY_TIMEOUT)))
         assertThat(app(Request(TRACE, "")), equalTo(Response(I_M_A_TEAPOT)))
         assertThat(app(Request(DELETE, "")), equalTo(response))
+        Unit
     }
 }
 
@@ -96,6 +96,7 @@ class VariableStageTest {
         variable.current = ChaosStages.Repeat { ReturnStatus(NOT_FOUND).appliedWhen(Always()) }
         assertThat(variable.toString(), equalTo(("Repeat [Always ReturnStatus (404)]")))
         assertThat(variable(request)!!.then { response }(request), hasStatus(NOT_FOUND.description("x-http4k-chaos")).and(hasHeader("x-http4k-chaos", Regex("Status 404"))))
+        Unit
     }
 }
 
@@ -108,6 +109,7 @@ class ChaosStageOperationsTest {
         assertThat(app(Request(GET, "")), equalTo(Response(NOT_FOUND)))
         assertThat(app(Request(POST, "")), equalTo(response))
         assertThat(app(Request(GET, "")), equalTo(response))
+        Unit
     }
 
     @Test
@@ -122,6 +124,7 @@ class ChaosStageOperationsTest {
         assertThat(app(Request(GET, "")), equalTo(Response(NOT_FOUND)))
         assertThat(app(Request(TRACE, "")), equalTo(Response(INTERNAL_SERVER_ERROR)))
         assertThat(app(Request(GET, "")), equalTo(Response(INTERNAL_SERVER_ERROR)))
+        Unit
     }
 }
 

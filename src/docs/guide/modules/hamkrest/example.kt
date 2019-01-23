@@ -3,7 +3,6 @@ package guide.modules.hamkrest
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-
 import org.http4k.core.Body
 import org.http4k.core.ContentType
 import org.http4k.core.Method
@@ -16,7 +15,7 @@ import org.http4k.hamkrest.hasQuery
 import org.http4k.hamkrest.hasStatus
 import org.http4k.lens.string
 
-suspend fun main() {
+fun main() {
 
     val request = Request(Method.POST, "/?a=b").body("http4k is cool").header("my header", "a value")
 

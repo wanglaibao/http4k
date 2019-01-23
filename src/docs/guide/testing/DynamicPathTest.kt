@@ -1,9 +1,8 @@
 package guide.testing
 
 import com.natpryce.hamkrest.and
-import kotlinx.coroutines.runBlocking
 import com.natpryce.hamkrest.assertion.assertThat
-import org.http4k.core.HttpHandler
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -25,5 +24,6 @@ class DynamicPathTest {
         val route: RoutingHttpHandler = routes(EchoPath)
         val response: Response = route(Request(GET, "/echo/my+great+message"))
         assertThat(response, hasStatus(OK).and(hasBody("my great message")))
+        Unit
     }
 }

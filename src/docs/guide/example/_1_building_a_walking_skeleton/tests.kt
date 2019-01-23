@@ -1,8 +1,6 @@
 package guide.example._1_building_a_walking_skeleton
 
-
 import com.natpryce.hamkrest.assertion.assertThat
-import com.natpryce.hamkrest.should.shouldMatch
 import kotlinx.coroutines.runBlocking
 import org.http4k.client.OkHttp
 import org.http4k.core.Method.GET
@@ -20,17 +18,18 @@ class EndToEndTest {
     private val server = MyMathServer(port)
 
     @BeforeEach
-    fun setup() {
+    fun setup(): Unit {
         server.start()
     }
 
     @AfterEach
-    fun teardown() {
+    fun teardown(): Unit {
         server.stop()
     }
 
     @Test
     fun `responds to ping`() = runBlocking {
         assertThat(client(Request(GET, "http://localhost:$port/ping")), hasStatus(OK))
+        Unit
     }
 }

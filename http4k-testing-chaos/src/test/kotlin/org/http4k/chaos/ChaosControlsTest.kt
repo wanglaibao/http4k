@@ -1,10 +1,14 @@
 package org.http4k.chaos
 
 import com.natpryce.hamkrest.and
+<<<<<<< HEAD
 import org.http4k.chaos.ChaosBehaviours.ReturnStatus
 import com.natpryce.hamkrest.assertion.assertThat
 
 import com.natpryce.hamkrest.should.shouldMatch
+=======
+import com.natpryce.hamkrest.assertion.assertThat
+>>>>>>> replace shouldMatch with assertThat
 import kotlinx.coroutines.runBlocking
 import org.http4k.chaos.ChaosStages.Wait
 import org.http4k.chaos.ChaosTriggers.Always
@@ -62,6 +66,10 @@ class ChaosControlsTest {
         assertThat(appWithChaos(Request(POST, "/chaos/deactivate")), hasStatus(OK).and(hasBody(noChaos)))
         assertThat(appWithChaos(Request(GET, "/chaos/status")), hasBody(noChaos))
         assertThat(appWithChaos(Request(POST, "/chaos/activate")), hasStatus(OK).and(hasBody(customChaos)))
+<<<<<<< HEAD
+=======
+        Unit
+>>>>>>> replace shouldMatch with assertThat
     }
 
     @Test
@@ -76,6 +84,10 @@ class ChaosControlsTest {
 
         assertThat(appWithChaos(Request(GET, "/context/status")), hasStatus(UNAUTHORIZED))
         assertThat(appWithChaos(Request(GET, "/context/status").header("secret", "whatever")), hasStatus(OK))
+<<<<<<< HEAD
+=======
+        Unit
+>>>>>>> replace shouldMatch with assertThat
     }
 
     @Test
@@ -90,5 +102,9 @@ class ChaosControlsTest {
 
         assertThat(appWithChaos(Request(GET, "/context/status")), hasStatus(OK))
         assertThat(appWithChaos(Request(GET, "/foo/bob")), hasStatus(I_M_A_TEAPOT).and(hasBody("foobob")))
+<<<<<<< HEAD
+=======
+        Unit
+>>>>>>> replace shouldMatch with assertThat
     }
 }

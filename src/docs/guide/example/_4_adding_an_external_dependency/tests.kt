@@ -47,7 +47,7 @@ abstract class RecorderCdc {
         checkAnswerRecorded()
     }
 
-    open fun checkAnswerRecorded() {}
+    open fun checkAnswerRecorded(): Unit {}
 }
 
 class FakeRecorderHttp : HttpHandler {
@@ -117,18 +117,21 @@ class AddFunctionalTest {
     fun `adds values together`() = runBlocking {
         env.client(Request(GET, "/add?value=1&value=2")).answerShouldBe(3)
         assertThat(env.recorder.calls, equalTo(listOf(3)))
+        Unit
     }
 
     @Test
     fun `answer is zero when no values`() = runBlocking {
         env.client(Request(GET, "/add")).answerShouldBe(0)
         assertThat(env.recorder.calls, equalTo(listOf(0)))
+        Unit
     }
 
     @Test
     fun `bad request when some values are not numbers`() = runBlocking {
         assertThat(env.client(Request(GET, "/add?value=1&value=notANumber")), hasStatus(BAD_REQUEST))
         assertThat(env.recorder.calls.isEmpty(), equalTo(true))
+        Unit
     }
 }
 
@@ -139,17 +142,20 @@ class MultiplyFunctionalTest {
     fun `products values together`() = runBlocking {
         env.client(Request(GET, "/multiply?value=2&value=4")).answerShouldBe(8)
         assertThat(env.recorder.calls, equalTo(listOf(8)))
+        Unit
     }
 
     @Test
     fun `answer is zero when no values`() = runBlocking {
         env.client(Request(GET, "/multiply")).answerShouldBe(0)
         assertThat(env.recorder.calls, equalTo(listOf(0)))
+        Unit
     }
 
     @Test
     fun `bad request when some values are not numbers`() = runBlocking {
         assertThat(env.client(Request(GET, "/multiply?value=1&value=notANumber")), hasStatus(BAD_REQUEST))
         assertThat(env.recorder.calls.isEmpty(), equalTo(true))
+        Unit
     }
 }
