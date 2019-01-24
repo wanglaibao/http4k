@@ -1,6 +1,8 @@
 package org.http4k.client
 
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.http4k.core.Body
 import org.http4k.core.Headers
 import org.http4k.core.Method.GET
@@ -30,9 +32,9 @@ object WebsocketClient {
      * Provides a client-side Websocket instance connected to a remote Websocket. The resultant object
      * can be have listeners attached to it. Optionally pass a WsConsumer which will be called onConnect
      */
-    fun nonBlocking(uri: Uri, headers: Headers = emptyList(), timeout: Duration = ZERO, onConnect: HandleWs = {}): Websocket {
+    fun nonBlocking(uri: Uri, headers: Headers = emptyList(), timeout: Duration = ZERO, scope: CoroutineScope = GlobalScope, onConnect: HandleWs = {}): Websocket {
         val socket = AtomicReference<PushPullAdaptingWebSocket>()
-        val client = NonBlockingClient(uri, headers, timeout, WsConsumer(onConnect), socket)
+        val client = NonBlockingClient(uri, headers, timeout, WsConsumer(onConnect), socket, scope)
         socket.set(AdaptingWebSocket(uri, client))
         client.connect()
         return socket.get()
@@ -54,10 +56,10 @@ private fun Headers.combineToMap() = this.groupBy { it.first }.mapValues { it.va
 
 private class AdaptingWebSocket(uri: Uri, private val client: WebSocketClient) : PushPullAdaptingWebSocket(Request(GET, uri)) {
     override suspend fun send(message: WsMessage) =
-            when (message.body) {
-                is StreamBody -> client.send(message.body.payload)
-                else -> client.send(message.bodyString())
-            }
+        when (message.body) {
+            is StreamBody -> client.send(message.body.payload)
+            else -> client.send(message.bodyString())
+        }
 
     override suspend fun close(status: WsStatus) = client.close(status.code, status.description)
 }
@@ -80,18 +82,32 @@ private class BlockingQueueClient(uri: Uri, headers: Headers, timeout: Duration,
     override fun onError(e: Exception): Unit = throw e
 }
 
-private class NonBlockingClient(uri: Uri, headers: Headers, timeout: Duration, private val onConnect: WsConsumer, private val socket: AtomicReference<PushPullAdaptingWebSocket>) : WebSocketClient(URI.create(uri.toString()), Draft_6455(), headers.combineToMap(), timeout.toMillis().toInt()) {
+private class NonBlockingClient(
+    uri: Uri,
+    headers: Headers,
+    timeout: Duration,
+    private val onConnect: WsConsumer,
+    private val socket: AtomicReference<PushPullAdaptingWebSocket>,
+    private val scope: CoroutineScope
+) : WebSocketClient(URI.create(uri.toString()), Draft_6455(), headers.combineToMap(), timeout.toMillis().toInt()) {
+
     override fun onOpen(handshakedata: ServerHandshake?) {
-        runBlocking {
+        scope.launch {
             onConnect(socket.get())
         }
     }
 
-    override fun onClose(code: Int, reason: String, remote: Boolean) = runBlocking { socket.get().triggerClose(WsStatus(code, reason)) }
+    override fun onClose(code: Int, reason: String, remote: Boolean) {
+        scope.launch { socket.get().triggerClose(WsStatus(code, reason)) }
+    }
 
-    override fun onMessage(message: String) = runBlocking { socket.get().triggerMessage(WsMessage(message)) }
+    override fun onMessage(message: String) {
+        scope.launch { socket.get().triggerMessage(WsMessage(message)) }
+    }
 
-    override fun onError(e: Exception) = runBlocking { socket.get().triggerError(e) }
+    override fun onError(e: Exception) {
+        scope.launch { socket.get().triggerError(e) }
+    }
 }
 
 private class BlockingWsClient(private val queue: LinkedBlockingQueue<() -> WsMessage?>, private val client: BlockingQueueClient) : WsClient {
@@ -100,8 +116,8 @@ private class BlockingWsClient(private val queue: LinkedBlockingQueue<() -> WsMe
     override fun close(status: WsStatus) = client.close(status.code, status.description)
 
     override fun send(message: WsMessage): Unit =
-            when (message.body) {
-                is StreamBody -> client.send(message.body.payload)
-                else -> client.send(message.bodyString())
-            }
+        when (message.body) {
+            is StreamBody -> client.send(message.body.payload)
+            else -> client.send(message.bodyString())
+        }
 }

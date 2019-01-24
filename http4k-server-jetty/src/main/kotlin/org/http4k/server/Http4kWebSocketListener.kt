@@ -1,6 +1,7 @@
 package org.http4k.server
 
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.eclipse.jetty.websocket.api.Session
 import org.eclipse.jetty.websocket.api.WebSocketListener
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest
@@ -30,17 +31,17 @@ internal fun ServletUpgradeRequest.asHttp4kRequest(): Request =
 
 private fun ServletUpgradeRequest.headerParameters(): Headers = headers.asSequence().fold(listOf()) { memo, next -> memo + next.value.map { next.key to it } }
 
-internal class Http4kWebSocketListener(private val wSocket: WsConsumer, private val upgradeRequest: Request) : WebSocketListener {
+internal class Http4kWebSocketListener(private val wSocket: WsConsumer, private val upgradeRequest: Request, private val scope: CoroutineScope) : WebSocketListener {
     private lateinit var websocket: Http4kWebSocketAdapter
 
     override fun onWebSocketClose(statusCode: Int, reason: String?) {
-        runBlocking {
+        scope.launch {
             websocket.onClose(statusCode, reason)
         }
     }
 
     override fun onWebSocketConnect(session: Session) {
-        runBlocking {
+        scope.launch {
             websocket = Http4kWebSocketAdapter(
                     object : PushPullAdaptingWebSocket(upgradeRequest) {
                         override suspend fun send(message: WsMessage) {
@@ -59,19 +60,19 @@ internal class Http4kWebSocketListener(private val wSocket: WsConsumer, private 
     }
 
     override fun onWebSocketText(message: String) {
-        runBlocking {
+        scope.launch {
             websocket.onMessage(Body(message))
         }
     }
 
     override fun onWebSocketBinary(payload: ByteArray, offset: Int, len: Int) {
-        runBlocking {
+        scope.launch {
             websocket.onMessage(Body(ByteBuffer.wrap(payload, offset, len)))
         }
     }
 
     override fun onWebSocketError(cause: Throwable) {
-        runBlocking {
+        scope.launch {
             websocket.onError(cause)
         }
     }
