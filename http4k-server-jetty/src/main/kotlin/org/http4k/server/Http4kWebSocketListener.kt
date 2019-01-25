@@ -1,7 +1,5 @@
 package org.http4k.server
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.eclipse.jetty.websocket.api.Session
 import org.eclipse.jetty.websocket.api.WebSocketListener
@@ -32,11 +30,11 @@ internal fun ServletUpgradeRequest.asHttp4kRequest(): Request =
 
 private fun ServletUpgradeRequest.headerParameters(): Headers = headers.asSequence().fold(listOf()) { memo, next -> memo + next.value.map { next.key to it } }
 
-internal class Http4kWebSocketListener(private val wSocket: WsConsumer, private val upgradeRequest: Request, private val scope: CoroutineScope) : WebSocketListener {
+internal class Http4kWebSocketListener(private val wSocket: WsConsumer, private val upgradeRequest: Request) : WebSocketListener {
     private lateinit var websocket: Http4kWebSocketAdapter
 
     override fun onWebSocketClose(statusCode: Int, reason: String?) {
-        scope.launch {
+        runBlocking {
             websocket.onClose(statusCode, reason)
         }
     }
@@ -61,19 +59,19 @@ internal class Http4kWebSocketListener(private val wSocket: WsConsumer, private 
     }
 
     override fun onWebSocketText(message: String) {
-        scope.launch {
+        runBlocking {
             websocket.onMessage(Body(message))
         }
     }
 
     override fun onWebSocketBinary(payload: ByteArray, offset: Int, len: Int) {
-        scope.launch {
+        runBlocking {
             websocket.onMessage(Body(ByteBuffer.wrap(payload, offset, len)))
         }
     }
 
     override fun onWebSocketError(cause: Throwable) {
-        scope.launch {
+        runBlocking {
             websocket.onError(cause)
         }
     }

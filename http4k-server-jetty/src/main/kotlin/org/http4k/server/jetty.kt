@@ -1,7 +1,5 @@
 package org.http4k.server
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory
 import org.eclipse.jetty.http2.HTTP2Cipher.COMPARATOR
@@ -43,13 +41,13 @@ class Jetty(private val port: Int, private val server: Server) : WsServerConfig 
     }
 }
 
-internal fun WsHandler.toJettyHandler(scope: CoroutineScope = GlobalScope) = object : WebSocketHandler() {
+internal fun WsHandler.toJettyHandler() = object : WebSocketHandler() {
     override fun configure(factory: WebSocketServletFactory) {
         factory.setCreator { req, _ ->
             runBlocking {
                 val request = req.asHttp4kRequest()
                 this@toJettyHandler(request)?.let {
-                    Http4kWebSocketListener(it, request, scope)
+                    Http4kWebSocketListener(it, request)
                 }
             }
         }
