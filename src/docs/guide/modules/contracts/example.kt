@@ -72,7 +72,7 @@ fun echoRoute(): ContractRoute {
     } bindContract POST
 
     // note that because we don't have any dynamic parameters, we can use a HttpHandler instance instad of a function
-    val echo: HttpHandler = { request: Request ->
+    val echo = HttpHandler { request: Request ->
         val received: NameAndMessage = body(request)
         Response(OK).with(body of received)
     }
@@ -93,6 +93,6 @@ val handler: HttpHandler = routes("/api/v1" bind contract)
 
 
 // by default, the OpenAPI docs live at the root of the contract context, but we can override it..
-fun main() {
+suspend fun main() {
     println(handler(Request(GET, "/api/v1/swagger.json")))
 }
