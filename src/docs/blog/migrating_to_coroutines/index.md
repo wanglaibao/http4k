@@ -18,7 +18,7 @@ Migration task list
     - ZipkinTraces
     - RequestContexts?
 
-- Websockets ???
+- ~~Websockets~~
    
 - Pre-release version:
     1. Release with 0.0.0.X version
