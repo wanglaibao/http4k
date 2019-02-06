@@ -2,13 +2,11 @@ package guide.modules.clients
 
 import org.apache.http.client.config.CookieSpecs
 import org.apache.http.client.config.RequestConfig
-import org.apache.http.impl.client.HttpClients
-import org.http4k.client.ApacheAsyncClient
+import org.apache.http.impl.nio.client.HttpAsyncClients
 import org.http4k.client.ApacheClient
 import org.http4k.core.BodyMode
 import org.http4k.core.Method
 import org.http4k.core.Request
-import kotlin.concurrent.thread
 
 suspend fun main() {
 
@@ -26,27 +24,14 @@ suspend fun main() {
     println("STREAM")
     println(streamingClient(streamingRequest).bodyString())
 
-    // async supporting clients can be passed a callback...
-    val asyncClient = ApacheAsyncClient()
-    asyncClient(Request(Method.GET, "http://httpbin.org/stream/5")) {
-        println("ASYNC")
-        println(it.status)
-        println(it.bodyString())
-    }
-
-    // ... but must be closed
-    thread {
-        Thread.sleep(500)
-        asyncClient.close()
-    }
-
     // custom configured client
     val customClient = ApacheClient(
         client =
-        HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
-            .setRedirectsEnabled(false)
-            .setCookieSpec(CookieSpecs.IGNORE_COOKIES)
-            .build()).build()
+        HttpAsyncClients.custom()
+            .setDefaultRequestConfig(RequestConfig.custom()
+                .setRedirectsEnabled(false)
+                .setCookieSpec(CookieSpecs.IGNORE_COOKIES)
+                .build()).build().apply { start() }
     )
 }
 

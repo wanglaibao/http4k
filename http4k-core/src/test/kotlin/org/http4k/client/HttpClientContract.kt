@@ -188,7 +188,7 @@ abstract class HttpClientContract(serverConfig: (Int) -> ServerConfig,
     }
 
     @Test
-    fun `requests have expected headers`() = runBlocking {
+    open fun `requests have expected headers`() = runBlocking {
         suspend fun checkNoBannedHeaders(m: Method, vararg banned: String) {
             val response = client(Request(m, "http://localhost:$port/headers"))
             val bannedHeaders = banned.intersect(response.bodyString().split(","))

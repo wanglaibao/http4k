@@ -60,7 +60,7 @@ abstract class StreamingContract(private val config: StreamingTestConfiguration 
     }
 
     @Test
-    fun `can stream response`() = runBlocking {
+    open fun `can stream response`() = runBlocking {
         captureReceivedStream("client") { createClient()(Request(GET, "$baseUrl/stream-response")).body.stream }
 
         waitForCompletion()
