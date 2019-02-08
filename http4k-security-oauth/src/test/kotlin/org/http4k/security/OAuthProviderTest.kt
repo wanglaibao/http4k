@@ -3,20 +3,13 @@ package org.http4k.security
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import org.http4k.core.Credentials
+import org.http4k.core.*
 import org.http4k.core.Method.GET
-import org.http4k.core.Request
-import org.http4k.core.Response
-import org.http4k.core.Status
 import org.http4k.core.Status.Companion.FORBIDDEN
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.Status.Companion.TEMPORARY_REDIRECT
-import org.http4k.core.Uri
 import org.http4k.core.cookie.cookie
-import org.http4k.core.query
-import org.http4k.core.then
-import org.http4k.core.toUrlFormEncoded
 import org.http4k.hamkrest.hasBody
 import org.http4k.hamkrest.hasHeader
 import org.http4k.hamkrest.hasStatus
@@ -35,7 +28,7 @@ class OAuthProviderTest {
 
     private fun oAuth(persistence: OAuthPersistence, status: Status = OK): OAuthProvider = OAuthProvider(
         providerConfig,
-        { Response(status).body("access token goes here") },
+        HttpHandler { Response(status).body("access token goes here") },
         Uri.of("http://callbackHost/callback"),
         listOf("scope1", "scope2"),
         persistence,

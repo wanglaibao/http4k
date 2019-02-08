@@ -1,22 +1,11 @@
 package cookbook.typesafe_http_contracts
 
-import org.http4k.contract.ApiInfo
-import org.http4k.contract.ApiKey
-import org.http4k.contract.OpenApi
+import org.http4k.contract.*
 import org.http4k.contract.bind
-import org.http4k.contract.contract
-import org.http4k.contract.div
-import org.http4k.contract.meta
-import org.http4k.core.Body
+import org.http4k.core.*
 import org.http4k.core.ContentType.Companion.TEXT_PLAIN
-import org.http4k.core.Filter
-import org.http4k.core.HttpHandler
-import org.http4k.core.HttpTransaction
 import org.http4k.core.Method.GET
-import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
-import org.http4k.core.then
-import org.http4k.core.with
 import org.http4k.filter.CachingFilters.Response.NoCache
 import org.http4k.filter.CorsPolicy
 import org.http4k.filter.ResponseFilters
@@ -36,14 +25,14 @@ import java.time.Clock
 
 fun main() {
 
-    fun add(value1: Int, value2: Int): HttpHandler = {
+    fun add(value1: Int, value2: Int) = HttpHandler {
         Response(OK).with(
             Body.string(TEXT_PLAIN).toLens() of (value1 + value2).toString()
         )
     }
 
     val ageQuery = Query.int().required("age")
-    fun echo(name: String): HttpHandler = {
+    fun echo(name: String) = HttpHandler {
         Response(OK).with(
             Body.string(TEXT_PLAIN).toLens() of "hello $name you are ${ageQuery(it)}"
         )
@@ -75,7 +64,7 @@ fun main() {
             returning(OK to "The result")
         } bindContract GET
             // note here that the trailing parameter can be ignored - it would simply be the value "divide".
-            to { first, second, _ -> { Response(OK).body((first / second).toString()) } },
+            to { first, second, _ -> HttpHandler { Response(OK).body((first / second).toString()) } },
         "/echo" / Path.of("name") meta {
             summary = "echo"
             queries += ageQuery

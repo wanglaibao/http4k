@@ -58,7 +58,7 @@ object CachingFilters {
             abstract fun headersFor(response: org.http4k.core.Response): Headers
 
             override fun invoke(next: HttpHandler): HttpHandler =
-                {
+                HttpHandler {
                     val response = next(it)
                     val headers = if (it.method == GET && predicate(response)) headersFor(response) else emptyList()
                     headers.fold(response) { memo, (first, second) -> memo.header(first, second) }

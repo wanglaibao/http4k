@@ -1,20 +1,10 @@
 package org.http4k.routing
 
-import org.http4k.core.Body
-import org.http4k.core.ContentType
+import org.http4k.core.*
 import org.http4k.core.ContentType.Companion.OCTET_STREAM
-import org.http4k.core.Filter
-import org.http4k.core.HttpHandler
-import org.http4k.core.Method
 import org.http4k.core.Method.GET
-import org.http4k.core.MimeTypes
-import org.http4k.core.NoOp
-import org.http4k.core.Request
-import org.http4k.core.Response
 import org.http4k.core.Status.Companion.NOT_FOUND
 import org.http4k.core.Status.Companion.OK
-import org.http4k.core.UriTemplate
-import org.http4k.core.then
 import org.http4k.websocket.Websocket
 import org.http4k.websocket.WsConsumer
 import java.nio.ByteBuffer
@@ -79,7 +69,7 @@ internal data class AggregateRoutingHttpHandler(
     override fun withBasePath(new: String): RoutingHttpHandler = copy(list = list.map { it.withBasePath(new) })
 }
 
-internal val routeNotFoundHandler: HttpHandler = { Response(NOT_FOUND.description("Route not found")) }
+internal val routeNotFoundHandler = HttpHandler { Response(NOT_FOUND.description("Route not found")) }
 
 internal data class TemplateRoutingHttpHandler(
     private val method: Method?,
@@ -90,7 +80,7 @@ internal data class TemplateRoutingHttpHandler(
 
     override fun match(request: Request): HttpHandler? =
         if (template.matches(request.uri.path) && (method == null || method == request.method))
-            { r: Request -> RoutedResponse(httpHandler(RoutedRequest(r, template)), template) }
+            HttpHandler { r: Request -> RoutedResponse(httpHandler(RoutedRequest(r, template)), template) }
         else null
 
     override fun invoke(request: Request): Response = (match(request) ?: notFoundHandler)(request)

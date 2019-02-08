@@ -8,15 +8,11 @@ import org.http4k.chaos.asFilter
 import org.http4k.chaos.then
 import org.http4k.chaos.until
 import org.http4k.client.OkHttp
-import org.http4k.core.HttpHandler
-import org.http4k.core.Method
+import org.http4k.core.*
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
-import org.http4k.core.Request
-import org.http4k.core.Response
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.OK
-import org.http4k.core.then
 import org.http4k.server.SunHttp
 import org.http4k.server.asServer
 
@@ -31,7 +27,7 @@ fun main() {
     // chain the stages together with then() and finally convert to a standard http4k Filter
     val filter = doNothingStage.then(errorStage).asFilter()
 
-    val svc: HttpHandler = { Response(OK).body("A normal response") }
+    val svc = HttpHandler { Response(OK).body("A normal response") }
     filter.then(svc).asServer(SunHttp(9000)).start().use {
         (1..10).forEach { performA(GET) }
 

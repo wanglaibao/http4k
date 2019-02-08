@@ -1,13 +1,9 @@
 package cookbook.readme
 
 import org.http4k.client.OkHttp
-import org.http4k.core.Filter
-import org.http4k.core.HttpHandler
+import org.http4k.core.*
 import org.http4k.core.Method.GET
-import org.http4k.core.Request
-import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
-import org.http4k.core.then
 import org.http4k.filter.CachingFilters
 import org.http4k.routing.bind
 import org.http4k.routing.path
@@ -37,7 +33,7 @@ fun main() {
 //    hello Bob
 
     // this is a Filter - it performs pre/post processing on a request or response
-    val timingFilter = Filter { next: HttpHandler ->
+    val timingFilter = Filter { next->
         { request: Request ->
             val start = System.currentTimeMillis()
             val response = next(request)

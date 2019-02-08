@@ -1,11 +1,6 @@
 package org.http4k.filter
 
-import org.http4k.core.ContentType
-import org.http4k.core.Filter
-import org.http4k.core.HttpHandler
-import org.http4k.core.HttpTransaction
-import org.http4k.core.Request
-import org.http4k.core.Response
+import org.http4k.core.*
 import java.time.Clock
 import java.time.Duration
 import java.time.Duration.between
@@ -64,7 +59,7 @@ object ResponseFilters {
             .map { it.value }
             .map { it.split(";").first() }
 
-        override fun invoke(next: HttpHandler): HttpHandler = { request ->
+        override fun invoke(next: HttpHandler) = HttpHandler { request ->
             next(request).let {
                 if (requestAcceptsGzip(request) && isCompressible(it)) {
                     it.body(it.body.gzipped()).replaceHeader("content-encoding", "gzip")

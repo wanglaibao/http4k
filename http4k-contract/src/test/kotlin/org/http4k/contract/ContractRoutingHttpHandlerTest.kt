@@ -3,19 +3,13 @@ package org.http4k.contract
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import org.http4k.core.Body
-import org.http4k.core.Filter
+import org.http4k.core.*
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.OPTIONS
-import org.http4k.core.Request
-import org.http4k.core.Response
 import org.http4k.core.Status.Companion.BAD_REQUEST
 import org.http4k.core.Status.Companion.NOT_IMPLEMENTED
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.Status.Companion.UNAUTHORIZED
-import org.http4k.core.UriTemplate
-import org.http4k.core.then
-import org.http4k.core.with
 import org.http4k.format.Jackson
 import org.http4k.format.Jackson.auto
 import org.http4k.hamkrest.hasBody
@@ -73,7 +67,7 @@ class ContractRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     fun `traffic goes to the path specified`() {
         val root = routes(
             "/root/bar" bind contract(
-                "/foo/bar" / Path.of("world") bindContract GET to { _ -> { Response(OK) } })
+                "/foo/bar" / Path.of("world") bindContract GET to { _ -> HttpHandler { Response(OK) } })
         )
         val response = root(Request(GET, "/root/bar/foo/bar/hello")) as RoutedResponse
 
@@ -107,7 +101,7 @@ class ContractRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     fun `identifies called route using identity header on request`() {
         val root = routes(
             "/root" bind contract(
-                Path.fixed("hello") / Path.of("world") bindContract GET to { _, _ -> { Response(OK) } })
+                Path.fixed("hello") / Path.of("world") bindContract GET to { _, _ -> HttpHandler { Response(OK) } })
         )
         val response: RoutedResponse = root(Request(GET, "/root/hello/planet")) as RoutedResponse
 

@@ -3,21 +3,11 @@ package org.http4k.chaos
 import org.http4k.chaos.ChaosStages.Repeat
 import org.http4k.chaos.ChaosStages.Variable
 import org.http4k.chaos.ChaosStages.Wait
-import org.http4k.contract.ApiInfo
-import org.http4k.contract.NoSecurity
-import org.http4k.contract.OpenApi
-import org.http4k.contract.Security
-import org.http4k.contract.contract
-import org.http4k.contract.meta
-import org.http4k.core.Body
-import org.http4k.core.Filter
-import org.http4k.core.HttpHandler
+import org.http4k.contract.*
+import org.http4k.core.*
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
-import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
-import org.http4k.core.then
-import org.http4k.core.with
 import org.http4k.filter.CorsPolicy
 import org.http4k.filter.CorsPolicy.Companion.UnsafeGlobalPermissive
 import org.http4k.filter.ServerFilters.Cors
@@ -55,7 +45,7 @@ object ChaosControls {
                     .reduce { acc, next -> acc.then(next) }
         }.toLens()
 
-        val showCurrentStatus: HttpHandler = {
+        val showCurrentStatus = HttpHandler {
             Response(OK).with(Body.json().toLens() of obj(
                     "chaos" to string(if (trigger.isActive()) variable.toString() else "none")
             ))

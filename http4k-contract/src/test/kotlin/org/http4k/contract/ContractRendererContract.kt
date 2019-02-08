@@ -2,37 +2,21 @@ package org.http4k.contract
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import org.http4k.core.Body
-import org.http4k.core.ContentType
+import org.http4k.core.*
 import org.http4k.core.ContentType.Companion.APPLICATION_FORM_URLENCODED
 import org.http4k.core.ContentType.Companion.APPLICATION_JSON
 import org.http4k.core.ContentType.Companion.APPLICATION_XML
 import org.http4k.core.ContentType.Companion.OCTET_STREAM
-import org.http4k.core.Method
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
-import org.http4k.core.Request
-import org.http4k.core.Response
 import org.http4k.core.Status.Companion.FORBIDDEN
 import org.http4k.core.Status.Companion.OK
-import org.http4k.core.with
 import org.http4k.format.Jackson
 import org.http4k.format.Jackson.json
 import org.http4k.format.Jackson.prettify
-import org.http4k.lens.FormField
-import org.http4k.lens.Header
-import org.http4k.lens.Invalid
-import org.http4k.lens.Meta
-import org.http4k.lens.Missing
+import org.http4k.lens.*
 import org.http4k.lens.ParamMeta.NumberParam
 import org.http4k.lens.ParamMeta.StringParam
-import org.http4k.lens.Path
-import org.http4k.lens.Query
-import org.http4k.lens.Validator
-import org.http4k.lens.boolean
-import org.http4k.lens.int
-import org.http4k.lens.string
-import org.http4k.lens.webForm
 import org.http4k.routing.bind
 import org.junit.jupiter.api.Test
 
@@ -66,7 +50,7 @@ abstract class ContractRendererContract(private val renderer: ContractRenderer) 
                 tags += Tag("tag3")
                 tags += Tag("tag1")
             } bindContract GET to { Response(OK) },
-            "/paths" / Path.of("firstName") / "bertrand" / Path.boolean().of("age") bindContract POST to { a, _, _ -> { Response(OK).body(a) } },
+            "/paths" / Path.of("firstName") / "bertrand" / Path.boolean().of("age") bindContract POST to { a, _, _ -> HttpHandler { Response(OK).body(a) } },
             "/queries" meta {
                 queries += Query.boolean().required("b", "booleanQuery")
                 queries += Query.string().optional("s", "stringQuery")

@@ -21,7 +21,7 @@ class GenerateDataClasses<out NODE>(private val json: Json<NODE>,
 
     private fun flatten(list: Set<Gen>): Set<Gen> = list.flatMap { it }.toSet().let { if (it == list) list else flatten(it) }
 
-    override fun invoke(next: HttpHandler): HttpHandler = { req ->
+    override fun invoke(next: HttpHandler) = HttpHandler { req ->
         val response = next(req)
         out.println("// result generated from ${req.uri}\n")
         out.println(flatten(setOf(process("Base", json.body().toLens()(response))))
