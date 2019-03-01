@@ -1,6 +1,16 @@
 package org.http4k.routing
 
-import org.http4k.core.*
+import org.http4k.core.Body
+import org.http4k.core.ContentType
+import org.http4k.core.Filter
+import org.http4k.core.HandleRequest
+import org.http4k.core.Headers
+import org.http4k.core.HttpHandler
+import org.http4k.core.Method
+import org.http4k.core.Request
+import org.http4k.core.Response
+import org.http4k.core.Uri
+import org.http4k.core.UriTemplate
 import org.http4k.websocket.WsConsumer
 import org.http4k.websocket.WsHandler
 import java.io.InputStream

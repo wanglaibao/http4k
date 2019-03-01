@@ -3,12 +3,23 @@ package guide.modules.contracts
 // for this example we're using Jackson - note that the auto method imported is an extension
 // function that is defined on the Jackson instance
 
-import org.http4k.contract.*
-import org.http4k.core.*
+import org.http4k.contract.ApiInfo
+import org.http4k.contract.ApiKey
+import org.http4k.contract.ContractRoute
+import org.http4k.contract.OpenApi
+import org.http4k.contract.bind
+import org.http4k.contract.contract
+import org.http4k.contract.div
+import org.http4k.contract.meta
+import org.http4k.core.Body
 import org.http4k.core.ContentType.Companion.TEXT_PLAIN
+import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
+import org.http4k.core.Request
+import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
+import org.http4k.core.with
 import org.http4k.format.Jackson
 import org.http4k.format.Jackson.auto
 import org.http4k.lens.Path

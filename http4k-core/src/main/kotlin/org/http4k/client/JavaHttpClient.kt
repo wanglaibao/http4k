@@ -1,6 +1,10 @@
 package org.http4k.client
 
-import org.http4k.core.*
+import org.http4k.core.Body
+import org.http4k.core.HttpHandler
+import org.http4k.core.Request
+import org.http4k.core.Response
+import org.http4k.core.Status
 import org.http4k.core.Status.Companion.CONNECTION_REFUSED
 import org.http4k.core.Status.Companion.UNKNOWN_HOST
 import java.io.ByteArrayInputStream

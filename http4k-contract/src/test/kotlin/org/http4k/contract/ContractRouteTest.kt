@@ -5,12 +5,24 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.present
 import com.natpryce.hamkrest.throws
-import org.http4k.core.*
+import org.http4k.core.Body
 import org.http4k.core.ContentType.Companion.TEXT_PLAIN
+import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
+import org.http4k.core.Request
+import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
-import org.http4k.lens.*
+import org.http4k.core.Uri
+import org.http4k.core.with
+import org.http4k.lens.Failure
+import org.http4k.lens.Header
+import org.http4k.lens.Missing
+import org.http4k.lens.Path
+import org.http4k.lens.Query
+import org.http4k.lens.int
+import org.http4k.lens.lensFailureWith
+import org.http4k.lens.string
 import org.junit.jupiter.api.Test
 
 class ContractRouteTest {

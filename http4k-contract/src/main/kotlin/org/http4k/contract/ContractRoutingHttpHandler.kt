@@ -1,7 +1,13 @@
 package org.http4k.contract
 
-import org.http4k.core.*
+import org.http4k.core.Filter
+import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
+import org.http4k.core.NoOp
+import org.http4k.core.Request
+import org.http4k.core.Response
+import org.http4k.core.UriTemplate
+import org.http4k.core.then
 import org.http4k.filter.ServerFilters.CatchLensFailure
 import org.http4k.routing.RoutedRequest
 import org.http4k.routing.RoutedResponse

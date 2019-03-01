@@ -1,9 +1,17 @@
 package org.http4k.filter
 
 import org.http4k.base64Encode
-import org.http4k.core.*
+import org.http4k.core.Credentials
+import org.http4k.core.Filter
+import org.http4k.core.HandleRequest
+import org.http4k.core.Method
+import org.http4k.core.Request
+import org.http4k.core.Response
+import org.http4k.core.Uri
 import org.http4k.core.cookie.cookie
 import org.http4k.core.cookie.cookies
+import org.http4k.core.extend
+import org.http4k.core.then
 import org.http4k.filter.ZipkinTraces.Companion.THREAD_LOCAL
 import org.http4k.filter.cookie.BasicCookieStorage
 import org.http4k.filter.cookie.CookieStorage

@@ -1,7 +1,13 @@
 package org.http4k.webdriver
 
-import org.http4k.core.*
+import org.http4k.core.Filter
+import org.http4k.core.HandleRequest
+import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
+import org.http4k.core.Request
+import org.http4k.core.Status
+import org.http4k.core.Uri
+import org.http4k.core.then
 import org.http4k.filter.ClientFilters
 import org.http4k.filter.cookie.CookieStorage
 import org.http4k.filter.cookie.LocalCookie
@@ -11,7 +17,9 @@ import java.net.URL
 import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.*
+import java.util.Date
+import java.util.UUID
+import kotlin.NoSuchElementException
 import org.http4k.core.cookie.Cookie as HCookie
 
 typealias Navigate = (Request) -> Unit

@@ -1,10 +1,20 @@
 package org.http4k.routing
 
-import org.http4k.core.*
+import org.http4k.core.Body
+import org.http4k.core.ContentType
 import org.http4k.core.ContentType.Companion.OCTET_STREAM
+import org.http4k.core.Filter
+import org.http4k.core.HttpHandler
+import org.http4k.core.Method
 import org.http4k.core.Method.GET
+import org.http4k.core.MimeTypes
+import org.http4k.core.NoOp
+import org.http4k.core.Request
+import org.http4k.core.Response
 import org.http4k.core.Status.Companion.NOT_FOUND
 import org.http4k.core.Status.Companion.OK
+import org.http4k.core.UriTemplate
+import org.http4k.core.then
 import org.http4k.websocket.Websocket
 import org.http4k.websocket.WsConsumer
 import java.nio.ByteBuffer

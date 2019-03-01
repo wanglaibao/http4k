@@ -3,10 +3,15 @@ package org.http4k.security
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.startsWith
-import org.http4k.core.*
+import org.http4k.core.Credentials
+import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
+import org.http4k.core.Request
+import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.Status.Companion.TEMPORARY_REDIRECT
+import org.http4k.core.Uri
+import org.http4k.core.then
 import org.http4k.hamkrest.hasAuthority
 import org.http4k.hamkrest.hasHeader
 import org.http4k.hamkrest.hasStatus

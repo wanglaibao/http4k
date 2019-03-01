@@ -10,9 +10,15 @@ import org.http4k.chaos.ChaosBehaviours.None
 import org.http4k.chaos.ChaosBehaviours.ReturnStatus
 import org.http4k.chaos.ChaosBehaviours.StackOverflow
 import org.http4k.chaos.ChaosBehaviours.ThrowException
-import org.http4k.core.*
 import org.http4k.core.Body.Companion.EMPTY
+import org.http4k.core.Filter
+import org.http4k.core.HttpHandler
+import org.http4k.core.Request
+import org.http4k.core.Response
+import org.http4k.core.Status
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
+import org.http4k.core.then
+import org.http4k.core.with
 import org.http4k.lens.Header
 import java.lang.Thread.sleep
 import java.time.Duration
