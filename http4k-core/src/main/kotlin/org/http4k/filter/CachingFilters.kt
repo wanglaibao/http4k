@@ -57,7 +57,7 @@ object CachingFilters {
         private abstract class CacheFilter(private val predicate: (org.http4k.core.Response) -> Boolean) : Filter {
             abstract fun headersFor(response: org.http4k.core.Response): Headers
 
-            override fun invoke(next: HttpHandler): HttpHandler =
+            override fun invoke(next: HttpHandler) =
                 HttpHandler {
                     val response = next(it)
                     val headers = if (it.method == GET && predicate(response)) headersFor(response) else emptyList()

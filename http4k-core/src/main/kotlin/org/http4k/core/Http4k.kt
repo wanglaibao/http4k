@@ -28,8 +28,8 @@ val Filter.Companion.NoOp: Filter get() = Filter { next -> { next(it) } }
 
 fun Filter.then(fn: HandleRequest) = then(HttpHandler(fn))
 
-fun Filter.then(next: Filter): Filter = Filter { this(next(HttpHandler(it)))::invoke }
+fun Filter.then(next: Filter) = Filter { this(next(HttpHandler(it)))::invoke }
 
-fun Filter.then(next: HttpHandler): HttpHandler = HttpHandler { this(next)(it) }
+fun Filter.then(next: HttpHandler) = HttpHandler { this(next)(it) }
 
-fun Filter.then(routingHttpHandler: RoutingHttpHandler): RoutingHttpHandler = routingHttpHandler.withFilter(this)
+fun Filter.then(routingHttpHandler: RoutingHttpHandler) = routingHttpHandler.withFilter(this)
