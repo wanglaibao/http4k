@@ -3,8 +3,8 @@
 This list is not currently intended to be all-encompassing - it will document major and breaking API changes with their rationale when appropriate:
 
 ### v3.115.0 (uncut)
-- (Forced-due-to-API-deprecation) Breaking: Reimplemented `http4k-testing-webdriver` to be compatible with upcoming v4.0 API. This means we now implement our own `By` classes, which can be found in the `org.http4k.webdriver` package. X-path based 
-searches were never supported by this module, so this is now enforced consistently. 
+- (Forced-due-to-API-deprecation) Breaking: Reimplemented `http4k-testing-webdriver` to be compatible with v4.0 API. This means we now implement our own `By` classes, which can be found in the `org.http4k.webdriver` package. X-path based 
+searches were never supported by this module anyway, so this is now enforced consistently. 
 - Simplified usage of `Once` chaos trigger.
 - (Slight break) Consistentified (!) construction of Chaos Behaviours, Stages and Triggers. Replaced 
 singletons with function calls. Eg. `Always -> Always()`
