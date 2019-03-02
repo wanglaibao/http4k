@@ -179,7 +179,7 @@ abstract class HttpClientContract(serverConfig: (Int) -> ServerConfig,
     }
 
     @Test
-    fun `handles empty response body for different statuses`() {
+    fun `handles empty response body for different statuses`() = runBlocking {
         listOf(200, 301, 400, 404, 500).forEach { statusCode ->
             val response = client(Request(GET, "http://localhost:$port/status-no-body/$statusCode"))
             assertThat(response.status, equalTo(Status(statusCode, "")))

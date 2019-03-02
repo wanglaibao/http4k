@@ -188,14 +188,14 @@ class ContractRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     }
 
     @Test
-    fun `handles bad request - parameter`() {
+    fun `handles bad request - parameter`() = runBlocking {
         assertThat(handler(Request(GET, "/bad-request")),
             hasStatus(BAD_REQUEST) and
                 hasBody("""{"message":"Missing/invalid parameters","params":[{"name":"foo","type":"query","datatype":"integer","required":true,"reason":"Missing"}]}"""))
     }
 
     @Test
-    fun `handles bad request - body`() {
+    fun `handles bad request - body`() = runBlocking {
         assertThat(handler(Request(GET, "/bad-request-body")),
             hasStatus(BAD_REQUEST) and
                 hasBody("""{"message":"Missing/invalid parameters","params":[{"name":"body","type":"body","datatype":"object","required":true,"reason":"Invalid"}]}"""))

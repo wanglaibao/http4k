@@ -11,4 +11,3 @@ dependencies {
     testCompile project(":http4k-testing-hamkrest")
     testCompile project(":http4k-server-jetty")
 }
-
