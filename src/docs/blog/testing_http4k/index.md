@@ -5,9 +5,13 @@ description: Introduces the "Testing http4k" blog series, which will detail the 
 
 ##### [@daviddenton][github] 
 
-## Intro
-testing http4k apps
-    - intro
+[Part 1: Zero-infra endpoint testing]()
+[Part 2: Stack and app testing]()
+[Part 3: Desperately seeking approval]()
+[Part 4: Dependencies: Fake it off]()
+[Part 5: Dependencies: Taking out a contract]()
+[Part 6: Add a little chaos to your life]()
+[Part 7: Clicky-clicky with WebDriver]()
 
 [github]: http://github.com/daviddenton
 [http4k]: https://http4k.org
