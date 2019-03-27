@@ -1,6 +1,5 @@
 title: http4k blog: Testing http4k - Part 6: Clicky-clicky with WebDriver
-description: Part 6 of the "Testing http4k" series covers the testing of applications using the 
-provided WebDriver support.
+description: Part 6 of the "Testing http4k" series covers the testing of browser-based app using the provided WebDriver support.
 
 # Testing http4k - Part 6: Clicky-clicky with WebDriver
 

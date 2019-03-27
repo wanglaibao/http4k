@@ -1,6 +1,5 @@
 title: http4k blog: Testing http4k - Part 3: Dependencies: Fake it off
-description: Part 3 of the "Testing http4k" series covers the building of downstream Fakes to model 
-your remote dependencies.
+description: Part 3 of the "Testing http4k" series covers the building of downstream Fakes to model your remote dependencies.
 
 # Testing http4k - Part 3: Dependencies: Fake it off
 
