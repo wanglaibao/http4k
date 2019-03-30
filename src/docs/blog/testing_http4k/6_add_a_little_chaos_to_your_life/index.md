@@ -1,5 +1,5 @@
 title: http4k blog: Testing http4k - Part 6: Add a little chaos to your life
-description: Part 6 of the "Testing http4k" series covers the support for ChaosTesting and failure-based testing.
+description: Part 6 of the "Testing http4k" series show how http4k provides support for Chaos and failure-based testing.
 
 # Testing http4k - Part 5: Add a little chaos to your life
 

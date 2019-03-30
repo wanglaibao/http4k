@@ -1,5 +1,5 @@
 title: http4k blog: Testing http4k - Part 3: Desperately seeking approval
-description: Part 3 of the "Testing http4k" series covers support for the Approval Testing methodology.
+description: Part 3 of the "Testing http4k" series introduces how to define HTTP contracts in code and to leverage Approval Testing techniques to control API changes.
 
 # Testing http4k - Part 3: Desperately seeking approval
 

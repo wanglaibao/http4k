@@ -1,5 +1,5 @@
 title: http4k blog: Testing http4k - Part 5: Dependencies: Taking out a contract
-description: Part 5 of the "Testing http4k" series covers Consumer Driven Contracts as a way of ensuring downstream fakes are behaving correctly.
+description: Part 5 of the "Testing http4k" series covers using Consumer Driven Contracts as a way of ensuring downstream fakes are behaving like the real thing.
 
 # Testing http4k - Part 5: Dependencies: Taking out a contract
 
