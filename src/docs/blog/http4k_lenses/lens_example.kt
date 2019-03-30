@@ -1,4 +1,4 @@
-package blog.typesafe_configuration.post
+package blog.http4k_lenses
 
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
