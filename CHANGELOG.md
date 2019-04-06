@@ -2,9 +2,94 @@
 
 This list is not currently intended to be all-encompassing - it will document major and breaking API changes with their rationale when appropriate:
 
-### v3.115.0 (uncut)
-- (Forced-due-to-API-deprecation) Breaking: Reimplemented `http4k-testing-webdriver` to be compatible with v4.0 API. This means we now implement our own `By` classes, which can be found in the `org.http4k.webdriver` package. X-path based 
-searches were never supported by this module anyway, so this is now enforced consistently. 
+### v3.132.0 (uncut)
+- (Forced-due-to-API-deprecation) Breaking: Reimplemented `http4k-testing-webdriver` to be compatible with v4.0 
+API. This means we now implement our own `By` classes, which can be found in the `org.http4k.webdriver` package. 
+X-path based 
+
+### v3.131.0
+- (Possible) Break: Made lense implementations `Query, Header etc` clear previous values by default instead of 
+appending. This leads to a more consistent behaviour. In order to be able to set multiple values on an object 
+using a lense, use the `multi` form instead - eg. `Header.required("foo")` -> `Header.multi.required("foo")`. We 
+envisage the impact of this change is limited as it's only Queries that generally can have multiple possible 
+values, and in the vast majority of cases a replace rather than append is expected.
+
+### v3.130.0
+- Generify contract handling code to allow for custom `HttpMessageMeta<XYZ>` 
+
+### v3.129.0
+- (Slight) Break: Collapsed `UpstreamRequestFailed` exceptions to contain the status, and thus removing non-special 
+cases like `BadRequest` and `BadGateway`. This makes them much easier to use in practice as users have access 
+to the the status. To migrate, simply replace previous classes with `UpstreamRequestFailed(Status.XYZ, message)`. 
+- Open up `ContractRoute` API to facilitate extension when defining a custom `ContractRenderer`.
+- Upgrade deps.
+
+### v3.128.0
+- Added base64 to the supported mappings for Query/Headers etc...
+- Approver does not write actual output if there is none to write and there is no approved content
+
+### v3.127.0
+- `http4k-testing-approval`: Improved `Approver` interface to more closely match the traditional 
+`assert<XYZ>` approach - this results in a more discoverable/obvious API.
+- Added ability to create a Hamkrest matcher directly from the `Approver` instance to be combined 
+with other relevant matchers.
+
+### v3.126.0
+- Add support for XML and HTML approval tests in `http4k-testing-approval` module.
+
+### v3.125.0
+- Added `http4k-testing-approval` module, which is compatible with JUnit5 tests and integrates with 
+the [OkeyDoke](https://github.com/dmcg/okey-doke) approval testing files and IntelliJ plugin. H/T to 
+@jshiell for the inspiration Gist containing the base Junit5 Extension.
+
+### v3.124.0
+- Make authentication response available when creating AuthorizationCode .
+
+### v3.123.0
+- Introduce OAuthServer to `http4k-security-oauth` to assist in the creation of authorization servers.
+
+### v3.122.0
+- Generified `GenerateXmlDataClasses` filter, and added default implementations for 
+ `http4k-format-jackson-xml` and `http4k-format-xml` modules.
+- (Rename) Break: `GenerateXmlDataClasses` filter in `http4k-format-xml` is now `GsonGenerateXmlDataClasses`
+- Removed superfluous `CatchLensFailure` filter from `http4k-contracts` module. This is not required 
+as lens failures are already handled by the main contract handler.
+
+### v3.121.0
+- Moved Jackson XML support to new module `http4k-format-jackson-xml`. Note that this is for 
+ auto-marshalling of data-classes only and does not expose an XML DOM model.
+
+### v3.120.0
+- Deprecated `Body.view()` lens construction in favour of a `Body.viewModel()` call which removes the 
+implicitly called `toLens()`. This allows further mapping from one `ViewModel` type to another, 
+and brings the view lens construction into line with the rest of the extension functions on `Body`.
+- Add auto-marshalling XML support to `http4k-format-jackson` module.
+- Upgrade deps.
+
+### v3.119.0
+- Add `UpstreamRequestFailed` exceptions and `HandleUpstreamRequestFailed` filters to 
+`http4k-cloudnative`. These allow apps to neatly deal with upstream failure in a sensible way.
+
+### v3.118.0
+- Tweak `contract()` DSL to add remaining options for configuration.
+
+### v3.117.0
+- Renamed `ChaosControls` (deprecated) to `ChaosEngine`.
+
+### v3.116.0
+- Added new templating module `http4k-templates-freemarker`. H/T @amcghie for the PR implementing this
+- `http4k-contract` has a new DSL for construction of the contract which replaces the old one (now 
+deprecated). This is consistent with the `meta` DSL used to construct individual contract routes 
+and avoids repetition of the old API. We attempted to implement the standard replace-with deprecation, but IntelliJ didn't like it (too complex maybe), so we've hard coded the warning instead which code which should work.
+- Added `PreFlightExtraction` to contract module, which adds the ability to disable body-checking for contract routes. This will allow refining of routes or entire contracts to be more efficient.
+- Upgrade deps.
+
+### v3.115.1
+- Fix #217 - Cannot override the definitionId of a top-level array in OpenAPI
+- Upgrade deps
+
+### v3.115.0
+- Chaos now do not blat `x-uri-template` when used with a `RoutingHttpHandler`
 - Simplified usage of `Once` chaos trigger.
 - (Slight break) Consistentified (!) construction of Chaos Behaviours, Stages and Triggers. Replaced 
 singletons with function calls. Eg. `Always -> Always()`

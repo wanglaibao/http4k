@@ -1,15 +1,28 @@
 package org.http4k.contract
 
-
+import org.http4k.contract.PreFlightExtraction.Companion.All
+import org.http4k.core.Filter
 import org.http4k.core.Method
+import org.http4k.core.NoOp
 import org.http4k.lens.Path
 import org.http4k.lens.PathLens
+import org.http4k.util.Appendable
 
-fun contract(vararg serverRoutes: ContractRoute) = contract(NoRenderer, "", NoSecurity, *serverRoutes)
-fun contract(renderer: ContractRenderer, vararg serverRoutes: ContractRoute) = contract(renderer, "", NoSecurity, *serverRoutes)
-fun contract(renderer: ContractRenderer, descriptionPath: String, vararg serverRoutes: ContractRoute) = contract(renderer, descriptionPath, NoSecurity, *serverRoutes)
-fun contract(renderer: ContractRenderer = NoRenderer, descriptionPath: String = "", security: Security = NoSecurity, vararg serverRoutes: ContractRoute) =
-    ContractRoutingHttpHandler(renderer, security, descriptionPath, serverRoutes.map { it })
+fun contract(fn: ContractBuilder.() -> Unit) = ContractBuilder().apply(fn).run {
+    ContractRoutingHttpHandler(renderer, security, descriptionPath, preFlightExtraction, routes.all,
+        preSecurityFilter = preSecurityFilter,
+        postSecurityFilter = postSecurityFilter)
+}
+
+class ContractBuilder internal constructor() {
+    var renderer: ContractRenderer = NoRenderer
+    var security: Security = NoSecurity
+    var descriptionPath = ""
+    var preFlightExtraction: PreFlightExtraction = All
+    var routes = Appendable<ContractRoute>()
+    var preSecurityFilter = Filter.NoOp
+    var postSecurityFilter = Filter.NoOp
+}
 
 operator fun <A> String.div(next: PathLens<A>): ContractRouteSpec1<A> = ContractRouteSpec0(toBaseFn(this), RouteMeta()) / next
 
@@ -36,3 +49,32 @@ infix fun <A, B, C, D, E, F, G, H, I> ContractRouteSpec9<A, B, C, D, E, F, G, H,
 infix fun <A, B, C, D, E, F, G, H, I, J> ContractRouteSpec10<A, B, C, D, E, F, G, H, I, J>.meta(new: RouteMetaDsl.() -> Unit) = ContractRouteSpec10(pathFn, routeMetaDsl(new), a, b, c, d, e, f, g, h, i, j)
 
 internal fun toBaseFn(path: String): (PathSegments) -> PathSegments = PathSegments(path).let { { old: PathSegments -> old / it } }
+
+@Deprecated("Replaced with DSL version using contract { routes += serverRoutes.toList() }", ReplaceWith("BROKEN! use example"))
+fun contract(vararg serverRoutes: ContractRoute) = contract {
+    routes += serverRoutes.toList()
+}
+
+@Deprecated("Replaced with DSL version using contract { routes += serverRoutes.toList(); this.renderer = renderer }",
+    ReplaceWith("BROKEN! use example"))
+fun contract(renderer: ContractRenderer, vararg serverRoutes: ContractRoute) = contract {
+    this.renderer = renderer
+    this.routes += serverRoutes.toList()
+}
+
+@Deprecated("Replaced with DSL version using contract { routes += serverRoutes.toList(); this.renderer = renderer }",
+    ReplaceWith("BROKEN! use example"))
+fun contract(renderer: ContractRenderer, descriptionPath: String, vararg serverRoutes: ContractRoute) = contract {
+    this.renderer = renderer
+    this.descriptionPath = descriptionPath
+    this.routes += serverRoutes.toList()
+}
+
+@Deprecated("Replaced with DSL version using contract { routes += serverRoutes.toList(); this.renderer = renderer; this.descriptionPath = descriptionPath; this.security = security }",
+    ReplaceWith("BROKEN! use example"))
+fun contract(renderer: ContractRenderer = NoRenderer, descriptionPath: String = "", security: Security = NoSecurity, vararg serverRoutes: ContractRoute) = contract {
+    this.renderer = renderer
+    this.security = security
+    this.descriptionPath = descriptionPath
+    this.routes += serverRoutes.toList()
+}

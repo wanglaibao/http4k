@@ -2,11 +2,11 @@ title: http4k Webdriver Module
 description: Feature overview of the http4k-webdriver module
 
 ### Installation (Gradle)
-```compile group: "org.http4k", name: "http4k-testing-webdriver", version: "3.114.0"```
+```compile group: "org.http4k", name: "http4k-testing-webdriver", version: "3.131.0"```
 
 ### About
 
-A basic Selenium WebDriver API implementation for **http4k** HttpHandlers, which runs completely out of container (no network) for ultra fast tests, backed by JSoup.
+A basic Selenium WebDriver API implementation for [http4k] HttpHandlers, which runs completely out of container (no network) for ultra fast tests, backed by JSoup.
 
 | Feature | Supported | Notes |
 |---------|-----------|-------|
@@ -28,3 +28,5 @@ when used).
 #### Code [<img class="octocat"/>](https://github.com/http4k/http4k/blob/master/src/docs/guide/modules/webdriver/example.kt)
 
 <script src="https://gist-it.appspot.com/https://github.com/http4k/http4k/blob/master/src/docs/guide/modules/webdriver/example.kt"></script>
+
+[http4k]: https://http4k.org

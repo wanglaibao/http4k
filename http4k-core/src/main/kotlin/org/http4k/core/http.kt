@@ -5,6 +5,7 @@ package org.http4k.core
 import org.http4k.asString
 import org.http4k.core.Body.Companion.EMPTY
 import org.http4k.core.HttpMessage.Companion.HTTP_1_1
+import org.http4k.routing.RoutedRequest
 import java.io.Closeable
 import java.io.InputStream
 import java.nio.ByteBuffer
@@ -126,6 +127,8 @@ interface Request : HttpMessage {
 
     fun queries(name: String): List<String?>
 
+    fun removeQuery(name: String): Request
+
     override fun header(name: String, value: String?): Request
 
     override fun headers(headers: Headers): Request
@@ -144,7 +147,8 @@ interface Request : HttpMessage {
 
     companion object {
         operator fun invoke(method: Method, uri: Uri, version: String = HTTP_1_1): Request = MemoryRequest(method, uri, listOf(), EMPTY, version)
-        operator fun invoke(method: Method, uri: String, version: String = HTTP_1_1): Request = MemoryRequest(method, Uri.of(uri), listOf(), EMPTY, version)
+        operator fun invoke(method: Method, uri: String, version: String = HTTP_1_1): Request = Request(method, Uri.of(uri), version)
+        operator fun invoke(method: Method, template: UriTemplate, version: String = HTTP_1_1): Request = RoutedRequest(Request(method, template.toString(), version), template)
     }
 }
 
@@ -162,11 +166,13 @@ data class MemoryRequest(override val method: Method, override val uri: Uri, ove
 
     override fun header(name: String, value: String?) = copy(headers = headers.plus(name to value))
 
-    override fun headers(headers: Headers) = copy(headers = this.headers.plus(headers))
+    override fun headers(headers: Headers) = copy(headers = this.headers + headers)
 
     override fun replaceHeader(name: String, value: String?) = copy(headers = headers.replaceHeader(name, value))
 
     override fun removeHeader(name: String) = copy(headers = headers.removeHeader(name))
+
+    override fun removeQuery(name: String) = copy(uri = uri.removeQuery(name))
 
     override fun body(body: Body) = copy(body = body)
 
@@ -210,9 +216,9 @@ interface Response : HttpMessage {
 
 @Suppress("EqualsOrHashCode")
 data class MemoryResponse(override val status: Status, override val headers: Headers = listOf(), override val body: Body = EMPTY, override val version: String = HTTP_1_1) : Response {
-    override fun header(name: String, value: String?) = copy(headers = headers.plus(name to value))
+    override fun header(name: String, value: String?) = copy(headers = headers + (name to value))
 
-    override fun headers(headers: Headers) = copy(headers = this.headers.plus(headers))
+    override fun headers(headers: Headers) = copy(headers = this.headers + headers)
 
     override fun replaceHeader(name: String, value: String?) = copy(headers = headers.replaceHeader(name, value))
 

@@ -6,9 +6,18 @@
  * to update this file */
 object Libs {
     /**
+     * [jackson-dataformat-xml website](http://wiki.fasterxml.com/JacksonExtensionXmlDataBinding) */
+    const val jackson_dataformat_xml: String =
+        "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:" + Versions.jackson_dataformat_xml
+
+    /**
      * [jackson-module-kotlin website](https://github.com/FasterXML/jackson-module-kotlin) */
     const val jackson_module_kotlin: String =
             "com.fasterxml.jackson.module:jackson-module-kotlin:" + Versions.jackson_module_kotlin
+
+    /**
+     * [underscore website](https://github.com/javadev/underscore-java) */
+    const val underscore: String = "com.github.javadev:underscore:" + Versions.underscore
 
     /**
      * [handlebars website](https://github.com/jknack/handlebars.java) */
@@ -160,6 +169,10 @@ object Libs {
      * [jetty-servlet website](http://www.eclipse.org/jetty) */
     const val jetty_servlet: String =
             "org.eclipse.jetty:jetty-servlet:" + Versions.org_eclipse_jetty
+
+    /**
+     * [freemarker website](https://freemarker.apache.org/) */
+    const val freemarker: String = "org.freemarker:freemarker:" + Versions.freemarker
 
     /**
      * [Java-WebSocket website](https://github.com/TooTallNate/Java-WebSocket) */

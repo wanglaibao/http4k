@@ -11,12 +11,7 @@ import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
-import org.http4k.core.Body
-import org.http4k.lens.BiDiBodyLensSpec
 import org.http4k.lens.BiDiMapping
-import org.http4k.lens.BiDiWsMessageLensSpec
-import org.http4k.lens.ContentNegotiation
-import org.http4k.websocket.WsMessage
 import java.lang.reflect.Type
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -80,15 +75,9 @@ open class ConfigurableGson(builder: GsonBuilder) : JsonLibAutoMarshallingJson<J
     override fun text(value: JsonElement): String = value.asString
     override fun bool(value: JsonElement): Boolean = value.asBoolean
 
-    override fun asJsonObject(a: Any): JsonElement = compact.toJsonTree(a)
-    override fun <T : Any> asA(s: String, c: KClass<T>): T = compact.fromJson(s, c.java)
-    override fun <T : Any> asA(j: JsonElement, c: KClass<T>): T = compact.fromJson(j, c.java)
-
-    inline fun <reified T : Any> JsonElement.asA(): T = asA(this, T::class)
-
-    inline fun <reified T : Any> Body.Companion.auto(description: String? = null, contentNegotiation: ContentNegotiation = ContentNegotiation.None): BiDiBodyLensSpec<T> = Body.json(description, contentNegotiation).map({ it.asA<T>() }, { it.asJsonObject() })
-
-    inline fun <reified T : Any> WsMessage.Companion.auto(): BiDiWsMessageLensSpec<T> = WsMessage.json().map({ it.asA<T>() }, { it.asJsonObject() })
+    override fun asJsonObject(input: Any): JsonElement = compact.toJsonTree(input)
+    override fun <T : Any> asA(input: String, target: KClass<T>): T = compact.fromJson(input, target.java)
+    override fun <T : Any> asA(j: JsonElement, target: KClass<T>): T = compact.fromJson(j, target.java)
 
     override fun textValueOf(node: JsonElement, name: String) = when (node) {
         is JsonObject -> node[name].asString

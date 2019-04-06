@@ -12,20 +12,17 @@ class ValidatorTest {
     private val formFields = FormField.required("bob")
 
     @Test
-    fun `strict`() {
-        assertThat({
-            Strict(WebForm(), formFields)
-        }, throws<LensFailure>())
+    fun strict() {
+        assertThat({ Strict(WebForm(), formFields) }, throws<LensFailure>())
     }
 
     @Test
-    fun `feedback`() {
+    fun feedback() {
         assertThat(Feedback(WebForm(), formFields), equalTo(listOf<Failure>(Missing(formFields.meta))))
     }
 
     @Test
-    fun `ignore`() {
+    fun ignore() {
         assertThat(Ignore(WebForm(), formFields), equalTo(emptyList()))
     }
-
 }

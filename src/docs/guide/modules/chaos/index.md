@@ -2,7 +2,7 @@ title: http4k Chaos Module
 description: Feature overview of the http4k-testing-chaos module
 
 ## Installation (Gradle)
-```compile group: "org.http4k", name: "http4k-testing-chaos", version: "3.114.0"```
+```compile group: "org.http4k", name: "http4k-testing-chaos", version: "3.131.0"```
 
 ## About
 The http4k Chaos module provides the facility to statically or dynamically inject failure modes into http4k applications, such as random HTTP failures, killing of processes, and extra latency injection. By modelling these modes, it is possible to plan for mitigation of particular scenarios on a wider scale, resulting either from failures within your system boundary, or those caused by dependent remote HTTP services.
@@ -61,9 +61,9 @@ For use in automated test suites, it is simple to define the Chaos behaviour pro
 ## Dynamic behaviour injection using Chaos Controls
 For use in deployed environments or when experimenting with the reaction of systems to failure, there is the need to vary (and otherwise control) the Chaos behaviour that an application or downstream fake exhibits, in order to simulate periods of failures and then observe the after-effects.
 
-The module contains a simple extension method `HttpHandler.withChaosControls()` that decorates an existing http4k application with the ability to dynamically inject Chaos behaviour using a set of RPC-style endpoints. This API is presented via an OpenAPI specification, which allows it to be controlled by a simple Swagger client. 
+The module contains a simple extension method `HttpHandler.withChaosEngine()` that decorates an existing http4k application with the ability to dynamically inject Chaos behaviour using a set of RPC-style endpoints. This API is presented via an OpenAPI specification, which allows it to be controlled by a simple Swagger client. 
 
-Apart from being able to turn the Chaos on/off and check the status, the most powerful endpoint in ChaosControls lives at `/activate/new`. By POSTing a JSON definition of the required behaviour, this JSON is deserialised into actual Chaos behaviours which can be then activated in the application. The supported JSON formats of the various Chaos concepts are defined above, but by way of an example, POSTing this piece of JSON would:
+Apart from being able to turn the Chaos on/off and check the status, the most powerful endpoint in ChaosEngine lives at `/activate/new`. By POSTing a JSON definition of the required behaviour, this JSON is deserialised into actual Chaos behaviours which can be then activated in the application. The supported JSON formats of the various Chaos concepts are defined above, but by way of an example, POSTing this piece of JSON would:
 
 1. Wait for 100 seconds
 1. Always return an HTTP 404 (Not Found) status for 10 requests
@@ -108,7 +108,7 @@ Apart from being able to turn the Chaos on/off and check the status, the most po
 #### Code [<img class="octocat"/>](https://github.com/http4k/http4k/blob/master/src/docs/guide/modules/chaos/example_chaos_controls_openapi.kt)
 <script src="https://gist-it.appspot.com/https://github.com/http4k/http4k/blob/master/src/docs/guide/modules/chaos/example_chaos_controls_openapi.kt"></script>
 
-## Interacting with ChaosControls using an HTTP client
+## Interacting with ChaosEngine using an HTTP client
 
 #### Code [<img class="octocat"/>](https://github.com/http4k/http4k/blob/master/src/docs/guide/modules/chaos/example_chaos_controls_client.kt)
 <script src="https://gist-it.appspot.com/https://github.com/http4k/http4k/blob/master/src/docs/guide/modules/chaos/example_chaos_controls_client.kt"></script>

@@ -2,7 +2,7 @@ title: http4k AWS Module
 description: Feature overview of the http4k-aws module
 
 ### Installation (Gradle)
-```compile group: "org.http4k", name: "http4k-aws", version: "3.114.0"```
+```compile group: "org.http4k", name: "http4k-aws", version: "3.131.0"```
 
 ### About
 
@@ -10,5 +10,5 @@ This module provides super-simple AWS request signing functionality for talking 
 
 http4k provides a `Filter` which does this request signing process. Just decorate a standard HTTP client and then make the relevant calls:
  
-#### Code [<img class="octocat"/>](https://github.com/http4k/http4k/blob/master/src/docs/guide/modules/aws/example_aws.kt)
-<script src="https://gist-it.appspot.com/https://github.com/http4k/http4k/blob/master/src/docs/guide/modules/aws/example_aws.kt"></script>
+#### Code [<img class="octocat"/>](https://github.com/http4k/http4k/blob/master/src/docs/guide/modules/aws/example.kt)
+<script src="https://gist-it.appspot.com/https://github.com/http4k/http4k/blob/master/src/docs/guide/modules/aws/example.kt"></script>

@@ -9,14 +9,16 @@ import org.http4k.core.Response
 import org.http4k.core.UriTemplate
 import org.http4k.core.then
 import org.http4k.filter.ServerFilters.CatchLensFailure
+import org.http4k.lens.LensFailure
+import org.http4k.lens.Validator
 import org.http4k.routing.RoutedRequest
 import org.http4k.routing.RoutedResponse
-import org.http4k.routing.Router
 import org.http4k.routing.RoutingHttpHandler
 
 data class ContractRoutingHttpHandler(private val renderer: ContractRenderer,
                                       private val security: Security,
                                       private val descriptionPath: String,
+                                      private val preFlightExtraction: PreFlightExtraction,
                                       private val routes: List<ContractRoute> = emptyList(),
                                       private val rootAsString: String = "",
                                       private val preSecurityFilter: Filter = Filter.NoOp,
@@ -44,22 +46,27 @@ data class ContractRoutingHttpHandler(private val renderer: ContractRenderer,
 
     private val catchLensFailure = CatchLensFailure { renderer.badRequest(it.failures) }
 
-    private val routers: List<Pair<Filter, Router>> = routes
-        .map { catchLensFailure.then(identify(it)).then(standardFilters) to it.toRouter(contractRoot) }
+    private val routers = routes
+        .map {
+            catchLensFailure
+                .then(identify(it))
+                .then(standardFilters)
+                .then(PreFlightExtractionFilter(it.meta, preFlightExtraction)) to it.toRouter(contractRoot)
+        }
         .plus(identify(descriptionRoute).then(preSecurityFilter).then(postSecurityFilter) to descriptionRoute.toRouter(contractRoot))
 
     private val noMatch: HttpHandler? = null
 
     override fun toString(): String = contractRoot.toString() + "\n" + routes.joinToString("\n") { it.toString() }
 
-    override fun match(request: Request): HttpHandler? =
+    override fun match(request: Request) =
         if (request.isIn(contractRoot)) {
             routers.fold(noMatch) { memo, (routeFilter, router) ->
                 memo ?: router.match(request)?.let { routeFilter.then(it) }
             }
         } else null
 
-    private fun identify(route: ContractRoute): Filter =
+    private fun identify(route: ContractRoute) =
         route.describeFor(contractRoot).let { routeIdentity ->
             Filter { next ->
                 {
@@ -68,4 +75,12 @@ data class ContractRoutingHttpHandler(private val renderer: ContractRenderer,
                 }
             }
         }
+}
+
+internal class PreFlightExtractionFilter(meta: RouteMeta, preFlightExtraction: PreFlightExtraction) : Filter {
+    private val preFlightChecks = (meta.preFlightExtraction ?: preFlightExtraction)(meta).toTypedArray()
+    override fun invoke(next: HttpHandler): HttpHandler = {
+        val failures = Validator.Strict(it, *preFlightChecks)
+        if (failures.isEmpty()) next(it) else throw LensFailure(failures, target = it)
+    }
 }

@@ -1,38 +1,23 @@
 package org.http4k.contract
 
-import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Uri
-import org.http4k.lens.LensFailure
 import org.http4k.lens.Path
 import org.http4k.lens.PathLens
 
 abstract class ContractRouteSpec internal constructor(val pathFn: (PathSegments) -> PathSegments,
                                                       val routeMeta: RouteMeta,
-                                                      vararg val pathLenses: PathLens<*>) : Filter {
+                                                      vararg val pathLenses: PathLens<*>) {
     abstract infix operator fun <T> div(next: PathLens<T>): ContractRouteSpec
 
     open infix operator fun div(next: String) = div(Path.fixed(next))
 
-    override fun invoke(nextHandler: HttpHandler): HttpHandler = { req ->
-        val body = routeMeta.body?.let { listOf(it::invoke) } ?: emptyList<(Request) -> Any?>()
-        val overallFailure = body.plus(routeMeta.requestParams).fold(null as LensFailure?) { memo, next ->
-            try {
-                next(req)
-                memo
-            } catch (e: LensFailure) {
-                memo?.let { LensFailure(it.failures + e.failures, e, e.target) } ?: e
-            }
-        }
-        overallFailure?.let { throw it } ?: nextHandler(req)
-    }
-
     internal fun describe(contractRoot: PathSegments): String = "${pathFn(contractRoot)}${if (pathLenses.isNotEmpty()) "/${pathLenses.joinToString("/")}" else ""}"
 
     open inner class ContractRequestBuilder(internal val method: Method) {
-        fun newRequest(baseUri: Uri) = Request(method, "").uri(baseUri.path(describe(Root)))
+        fun newRequest(baseUri: Uri = Uri.of("")) = Request(method, "").uri(baseUri.path(describe(Root)))
     }
 }
 
@@ -177,9 +162,9 @@ class ContractRouteSpec9<out A, out B, out C, out D, out E, out F, out G, out H,
 
     inner class Binder(method: Method) : ContractRequestBuilder(method) {
         infix fun to(fn: (A, B, C, D, E, F, G, H, I) -> HttpHandler): ContractRoute =
-                with(this@ContractRouteSpec9) {
-                    ContractRoute(method, this, routeMeta) { fn(it[a], it[b], it[c], it[d], it[e], it[f], it[g], it[h], it[i]) }
-                }
+            with(this@ContractRouteSpec9) {
+                ContractRoute(method, this, routeMeta) { fn(it[a], it[b], it[c], it[d], it[e], it[f], it[g], it[h], it[i]) }
+            }
     }
 
     infix fun bindContract(method: Method) = Binder(method)

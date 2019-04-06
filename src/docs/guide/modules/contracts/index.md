@@ -3,8 +3,8 @@ description: Feature overview of the http4k-contract module
 
 ### Installation (Gradle)
 ```
-compile group: "org.http4k", name: "http4k-contract", version: "3.114.0"
-compile group: "org.http4k", name: "http4k-format-<insert json lib>", version: "3.114.0"
+compile group: "org.http4k", name: "http4k-contract", version: "3.131.0"
+compile group: "org.http4k", name: "http4k-format-<insert json lib>", version: "3.131.0"
 ```
 
 ### About
@@ -17,12 +17,6 @@ combined into `RouteModules`, which have the following features:
 - **Self-describing:** - a generated endpoint is provided which describes all of the `Routes` in that module. Implementations include [OpenApi/Swagger](http://swagger.io/) documentation, including generation of [JSON schema]
 (http://json-schema.org/) models for messages.
 - **Security:** to secure the `Routes`  against unauthorised access. Current implementations include `ApiKey`.
-
-#### Code [<img class="octocat"/>](https://github.com/http4k/http4k/blob/master/src/docs/guide/modules/contracts/example.kt)
-
-<script src="https://gist-it.appspot.com/https://github.com/http4k/http4k/blob/master/src/docs/guide/modules/contracts/example.kt"></script>
-
-When launched, OpenApi/Swagger format documentation (including JSON schema models) can be found at the route of the module.
 
 #### Code [<img class="octocat"/>](https://github.com/http4k/http4k/blob/master/src/docs/guide/modules/contracts/example.kt)
 
