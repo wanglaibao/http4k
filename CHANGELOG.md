@@ -5,7 +5,7 @@ This list is not currently intended to be all-encompassing - it will document ma
 ### v3.132.0 (uncut)
 - (Forced-due-to-API-deprecation) Breaking: Reimplemented `http4k-testing-webdriver` to be compatible with v4.0 
 API. This means we now implement our own `By` classes, which can be found in the `org.http4k.webdriver` package. 
-X-path based 
+XPath based lookups were never supported by JSoup anyway, which backs this implementation.
 
 ### v3.131.0
 - (Possible) Break: Made lense implementations `Query, Header etc` clear previous values by default instead of 
